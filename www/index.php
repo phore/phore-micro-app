@@ -39,6 +39,7 @@ class SafeController extends Controller {
         QueryParams $GET
     ) {
         echo "da";
+        throw new \InvalidArgumentException("asd");
     }
 }
 
