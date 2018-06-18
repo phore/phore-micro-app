@@ -6,6 +6,9 @@
  * Time: 15:22
  */
 namespace Demo;
+use HtmlTheme\Pack\CoreUI\CoreUI;
+use HtmlTheme\Pack\CoreUI\CoreUi_Config_PageWithHeader;
+use HtmlTheme\Pack\CoreUI\CoreUi_PageWithHeader;
 use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
 use Phore\MicroApp\Type\QueryParams;
@@ -17,6 +20,11 @@ require __DIR__ . "/../vendor/autoload.php";
 
 
 $app = new App();
+$app->addAssetPath(CoreUI::COREUI_ASSET_PATH);
+$app->addVirtualAsset("all.js", CoreUI::COREUI_JS_FILES);
+$app->addVirtualAsset("all.css", CoreUI::COREUI_CSS_FILE);
+$app->dispatchAssetRoute();
+
 
 
 $app->route_match("/api/v1/*")
@@ -28,6 +36,11 @@ $app->route_match("/api/v1/*")
     });
 
 
+$app->route_match("/")->get(function () {
+    $config = new CoreUi_Config_PageWithHeader();
+    $page = new CoreUi_PageWithHeader($config);
+    $page->out();
+});
 
 
 class SafeController extends Controller {

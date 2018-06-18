@@ -12,6 +12,7 @@ namespace Phore\MicroApp;
 use Phore\Di\Container\DiContainer;
 use Phore\Di\Container\Producer\DiService;
 use Phore\Di\Container\Producer\DiValue;
+use Phore\MicroApp\Traits\_AppAssets;
 use Phore\MicroApp\Traits\_AppBasicAuth;
 use Phore\MicroApp\Traits\_AppEnv;
 use Phore\MicroApp\Traits\_AppRoute;
@@ -25,7 +26,7 @@ use Phore\MicroApp\Type\Request;
  */
 class App extends DiContainer
 {
-    use _AppEnv, _AppRoute, _AppBasicAuth;
+    use _AppEnv, _AppRoute, _AppBasicAuth, _AppAssets;
 
 
     public function __construct()

@@ -2,6 +2,8 @@
 # Run ./kickstart.sh to start a development-container for this project
 version: 1
 from: "continue/kickstart-flavor-gaia:testing"
+apache_fallback_resource: "/index.php"
+
 
 command:
   init:
