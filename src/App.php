@@ -15,6 +15,7 @@ use Phore\Di\Container\Producer\DiValue;
 use Phore\MicroApp\Traits\_AppAssets;
 use Phore\MicroApp\Traits\_AppBasicAuth;
 use Phore\MicroApp\Traits\_AppEnv;
+use Phore\MicroApp\Traits\_AppErrorHandler;
 use Phore\MicroApp\Traits\_AppRoute;
 use Phore\MicroApp\Type\Request;
 
@@ -26,7 +27,7 @@ use Phore\MicroApp\Type\Request;
  */
 class App extends DiContainer
 {
-    use _AppEnv, _AppRoute, _AppBasicAuth, _AppAssets;
+    use _AppEnv, _AppRoute, _AppBasicAuth, _AppAssets, _AppErrorHandler;
 
 
     public function __construct()
@@ -35,6 +36,9 @@ class App extends DiContainer
         $this->add(get_class($this), new DiValue($this));
         $this->add("request", new DiService(function () { return Request::Build(); }));
     }
+
+
+
 
 
     public function __get ($name)

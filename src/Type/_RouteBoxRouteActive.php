@@ -28,43 +28,74 @@ class _RouteBoxRouteActive extends _RouteBox
     {
         if ( ! class_exists($controllerClassName))
             throw new \InvalidArgumentException("Controller class '$controllerClassName' not exiting" );
-        $controller = new $controllerClassName($this->app->buildParametersForConstructor($controllerClassName, $this->callParams));
-        $controller->on(...$this->app->buildParametersFor([$controller, "on"], $this->callParams));
-        switch ($this->app->request->requestMethod) {
-            case "GET":
-                $controller->on_get(...$this->app->buildParametersFor([$controller, "on_get"], $this->callParams));
-                break;
-            case "POST":
-                $controller->on_post(...$this->app->buildParametersFor([$controller, "on_post"], $this->callParams));
-                break;
-            case "DELETE":
-                $controller->on_delete(...$this->app->buildParametersFor([$controller, "on_delete"], $this->callParams));
-                break;
-            case "PUT":
-                $controller->on_put(...$this->app->buildParametersFor([$controller, "on_put"], $this->callParams));
-                break;
+        try {
+            $controller
+                = new $controllerClassName($this->app->buildParametersForConstructor($controllerClassName,
+                $this->callParams));
+            $controller->on(...
+                $this->app->buildParametersFor([$controller, "on"],
+                    $this->callParams));
+            switch ($this->app->request->requestMethod) {
+                case "GET":
+                    $controller->on_get(...
+                        $this->app->buildParametersFor([$controller, "on_get"],
+                            $this->callParams));
+                    break;
+                case "POST":
+                    $controller->on_post(...
+                        $this->app->buildParametersFor([$controller, "on_post"],
+                            $this->callParams));
+                    break;
+                case "DELETE":
+                    $controller->on_delete(...$this->app->buildParametersFor([
+                        $controller,
+                        "on_delete"
+                    ], $this->callParams));
+                    break;
+                case "PUT":
+                    $controller->on_put(...
+                        $this->app->buildParametersFor([$controller, "on_put"],
+                            $this->callParams));
+                    break;
+            }
+        } catch (\Exception $e) {
+            $this->app->triggerException($e);
         }
+
         return $this;
     }
 
 
     public function on (array $methods = ["GET", "POST", "PUT", "DELETE", "HEADER"], callable $fn) : _RouteBox
     {
-        if (in_array ($this->app->request->requestMethod, $methods))
-            $fn(...$this->app->buildParametersFor($fn, $this->callParams));
-        return $this;
+        try {
+            if (in_array($this->app->request->requestMethod, $methods)) {
+                $fn(...$this->app->buildParametersFor($fn, $this->callParams));
+            }
+
+            return $this;
+        } catch (\Exception $e) {
+            $this->app->triggerException($e);
+        }
     }
 
     public function get (callable $fn) : _RouteBox
     {
-        if ($this->app->request->requestMethod == "GET")
-            $fn(...$this->app->buildParametersFor($fn, $this->callParams));
-        return $this;
+        try {
+            if ($this->app->request->requestMethod == "GET") {
+                $fn(...$this->app->buildParametersFor($fn, $this->callParams));
+            }
+
+            return $this;
+        } catch (\Exception $e) {
+            $this->app->triggerException($e);
+        }
     }
 
 
     public function post (callable $fn) : _RouteBox
     {
+
         if ($this->app->request->requestMethod == "POST")
             $fn(...$this->app->buildParametersFor($fn, $this->callParams));
         return $this;

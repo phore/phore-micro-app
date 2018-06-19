@@ -23,7 +23,7 @@ class Immutable
     {
         if ( ! isset ($this->__immutableData[$name])) {
             if (func_num_args() == 1)
-                throw new \InvalidArgumentException("Missing value '$name'");
+                throw new \InvalidArgumentException("Missing value '$name' in ". get_class($this));
             if ($default instanceof \Exception)
                 throw $default;
             return $default;

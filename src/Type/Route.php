@@ -15,6 +15,7 @@ namespace Phore\MicroApp\Type;
  * @package Phore\MicroApp\Type
  *
  * @property-read RouteParams   $routeParams
+ * @property-read string        $route
  * @property-read Request       $request        The Original Request
  */
 class Route extends Immutable

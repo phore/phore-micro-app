@@ -42,6 +42,7 @@ trait _AppRoute
                 "route" =>
                       new Route([
                           "routeParams" => $routeParams = new RouteParams($params),
+                          "route" => $route,
                           "request" => $request
                       ]),
                 "routeParams" => $routeParams,

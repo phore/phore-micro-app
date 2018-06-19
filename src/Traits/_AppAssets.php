@@ -9,6 +9,7 @@
 namespace Phore\MicroApp\Traits;
 
 
+use Phore\MicroApp\Exception\HttpException;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
 
@@ -70,7 +71,7 @@ trait _AppAssets
                     exit;
                 }
             }
-            throw new \InvalidArgumentException("Asset '$assetPath' not found.");
+            throw new HttpException("Asset '$assetPath' not found.", 404);
         });
     }
 

@@ -11,6 +11,7 @@ use HtmlTheme\Pack\CoreUI\CoreUi_Config_PageWithHeader;
 use HtmlTheme\Pack\CoreUI\CoreUi_PageWithHeader;
 use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
+use Phore\MicroApp\Handler\JsonExceptionHandler;
 use Phore\MicroApp\Type\QueryParams;
 use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
@@ -20,7 +21,10 @@ require __DIR__ . "/../vendor/autoload.php";
 
 
 $app = new App();
+$app->activateExceptionErrorHandlers();
 $app->addAssetPath(CoreUI::COREUI_ASSET_PATH);
+$app->setOnExceptionHandler(new JsonExceptionHandler());
+
 $app->addVirtualAsset("all.js", CoreUI::COREUI_JS_FILES);
 $app->addVirtualAsset("all.css", CoreUI::COREUI_CSS_FILE);
 $app->dispatchAssetRoute();
