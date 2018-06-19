@@ -9,14 +9,29 @@
 namespace Phore\MicroApp\Traits;
 
 
-class _AppResponse
+trait _AppResponse
 {
 
+    protected $responseHeader;
 
-
-    public function respond($data, array $headers = [], int $code=200)
+    /**
+     * @param $name
+     * @param $value
+     *
+     * @return $this
+     */
+    public function withResponseHeader($name, $value)
     {
+        $this->responseHeader[$name] = $value;
+        return $this;
+    }
 
+    public function outJSON ($data, int $httpCode=200)
+    {
+        //foreach ()
+        header("Content-Type: application/json");
+        echo json_encode($data);
+        exit;
     }
 
 }

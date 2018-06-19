@@ -33,7 +33,7 @@ $app->dispatchAssetRoute();
 
 $app->route_match("/api/v1/*")
     ->get(function () {
-
+        app()->outJSON(["fail"]);
     })
     ->post(function () {
 

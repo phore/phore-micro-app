@@ -16,6 +16,7 @@ use Phore\MicroApp\Traits\_AppAssets;
 use Phore\MicroApp\Traits\_AppBasicAuth;
 use Phore\MicroApp\Traits\_AppEnv;
 use Phore\MicroApp\Traits\_AppErrorHandler;
+use Phore\MicroApp\Traits\_AppResponse;
 use Phore\MicroApp\Traits\_AppRoute;
 use Phore\MicroApp\Type\Request;
 
@@ -27,12 +28,15 @@ use Phore\MicroApp\Type\Request;
  */
 class App extends DiContainer
 {
-    use _AppEnv, _AppRoute, _AppBasicAuth, _AppAssets, _AppErrorHandler;
+    use _AppEnv, _AppRoute, _AppBasicAuth, _AppAssets, _AppErrorHandler, _AppResponse;
 
 
     public function __construct()
     {
         parent::__construct();
+        if (self::$_instance !== null)
+            throw new \InvalidArgumentException("Multiple App instanciation");
+        self::$_instance = $this;
         $this->add(get_class($this), new DiValue($this));
         $this->add("request", new DiService(function () { return Request::Build(); }));
     }
@@ -51,7 +55,7 @@ class App extends DiContainer
     public static function getInstance() : self
     {
         if (self::$_instance === null)
-            self::$_instance = new App();
+            new App();
         return self::$_instance;
     }
 
