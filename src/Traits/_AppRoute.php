@@ -25,7 +25,7 @@ trait _AppRoute
         $route = preg_replace("|\\:([a-zA-Z0-9\\_]+)|", '(?<$1>[^/]*)', $route);
 
         $path = parse_url($_SERVER["REQUEST_URI"])["path"];
-        if(preg_match("|" . $route . "|", $path, $params))
+        if(preg_match("|^" . $route . "$|", $path, $params))
             return true;
         return false;
     }
