@@ -18,7 +18,7 @@ use Phore\MicroApp\Type\RouteParams;
 
 trait _AppRoute
 {
-    protected function is_route_match (string $route, &$params)
+    public function is_route_match (string $route, &$params)
     {
         $route = preg_replace("|\\*|", '.*', $route);
         $route = preg_replace("|\\:\\:([a-zA-Z0-9\\_]+)|", '(?<$1>.*)', $route);
