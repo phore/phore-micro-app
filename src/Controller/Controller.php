@@ -17,10 +17,6 @@ use Phore\MicroApp\Type\RouteParams;
 abstract class Controller
 {
 
-    public function before (Request $request, Route $route, RouteParams $routeParams, QueryParams $GET, QueryParams $POST=null) {
-
-    }
-
     public function on(Request $request, Route $route, RouteParams $routeParams, QueryParams $GET, QueryParams $POST=null) {
 
     }
@@ -38,10 +34,6 @@ abstract class Controller
     }
 
     public function on_delete(Request $request, Route $route, RouteParams $routeParams, QueryParams $GET, QueryParams $POST) {
-
-    }
-
-    public function on_header() {
 
     }
 

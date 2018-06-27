@@ -18,7 +18,9 @@
   },
   "require": {
     "php" : ">7.1",
-    "phore/di-base": "*",
+    "phore/di-base": "*"
+  },
+  "require-dev": {
     "continue/theme": "dev-master"
   },
   "suggest": {

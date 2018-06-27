@@ -10,8 +10,7 @@ use HtmlTheme\Pack\CoreUI\CoreUI;
 use HtmlTheme\Pack\CoreUI\CoreUi_Config_PageWithHeader;
 use HtmlTheme\Pack\CoreUI\CoreUi_PageWithHeader;
 use Phore\MicroApp\App;
-use Phore\MicroApp\Auth\Acl;
-use Phore\MicroApp\Auth\AuthManager;
+use Phore\MicroApp\AppModule;
 use Phore\MicroApp\Auth\BasicUserProvider;
 use Phore\MicroApp\Auth\HttpBasicAuthMech;
 use Phore\MicroApp\Controller\Controller;
@@ -60,5 +59,24 @@ class SafeController extends Controller {
 
 $app->router->delegate("/muh", SafeController::class);
 
+
+class SomeModule extends Controller implements AppModule {
+
+    public function on_get(
+        Request $request,
+        Route $route,
+        RouteParams $routeParams,
+        QueryParams $GET
+    ) {
+        \app()->outJSON(["brian_says" => "romans go home!"]);
+    }
+
+    public function register(App $app)
+    {
+        $app->router->delegate("/some/route", self::class);
+    }
+}
+
+$app->addModule(new SomeModule());
 
 $app->serve();
