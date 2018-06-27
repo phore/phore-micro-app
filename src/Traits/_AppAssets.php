@@ -10,6 +10,8 @@ namespace Phore\MicroApp\Traits;
 
 
 use Phore\MicroApp\Exception\HttpException;
+use Phore\MicroApp\Router\Router;
+use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
 
@@ -46,33 +48,36 @@ trait _AppAssets
     }
 
 
-    public function dispatchAssetRoute()
+    protected function dispatchAssetRoute(Request $request)
     {
-        $this->route_match("/asset/::assetPath")->get(function (Route $route) {
-            $assetPath = $route->routeParams->assetPath;
-            $ext = pathinfo($route->routeParams->assetPath, PATHINFO_EXTENSION);
-            if ( ! isset ($this->mimeTab[$ext]))
-                throw new \InvalidArgumentException("No mime type defined for file extension '$ext'");
+        if ( ! Router::IsMatching("/asset/::assetPath", $request, $params))
+            return false;
 
-            if (isset ($this->virtualAsset[$assetPath])) {
+
+        $assetPath = $params["assetPath"];
+        $ext = pathinfo($assetPath, PATHINFO_EXTENSION);
+        if ( ! isset ($this->mimeTab[$ext]))
+            throw new \InvalidArgumentException("No mime type defined for file extension '$ext'");
+
+        if (isset ($this->virtualAsset[$assetPath])) {
+            header("Content-Type: {$this->mimeTab[$ext]}");
+            foreach ($this->virtualAsset[$assetPath] as $curFile) {
+                echo file_get_contents($curFile);
+                exit;
+            }
+        }
+
+        foreach ($this->assetPath as $curPath) {
+            if (file_exists($curPath . "/" . $assetPath)) {
                 header("Content-Type: {$this->mimeTab[$ext]}");
-                foreach ($this->virtualAsset[$assetPath] as $curFile) {
-                    echo file_get_contents($curFile);
-                    exit;
-                }
+                $fp = fopen($curPath . "/" . $assetPath, "r");
+                fpassthru($fp);
+                fclose($fp);
+                exit;
             }
+        }
+        throw new HttpException("Asset '$assetPath' not found.", 404);
 
-            foreach ($this->assetPath as $curPath) {
-                if (file_exists($curPath . "/" . $assetPath)) {
-                    header("Content-Type: {$this->mimeTab[$ext]}");
-                    $fp = fopen($curPath . "/" . $assetPath, "r");
-                    fpassthru($fp);
-                    fclose($fp);
-                    exit;
-                }
-            }
-            throw new HttpException("Asset '$assetPath' not found.", 404);
-        });
     }
 
 }

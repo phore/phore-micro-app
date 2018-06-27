@@ -14,6 +14,7 @@ namespace Phore\MicroApp\Type;
  * @package Phore\MicroApp\Type
  *
  * @property-read string $requestMethod     POST/GET/PUT/DELETE
+ * @property-read string $requestPath       The Path the route is calculated on
  * @property-read QueryParams $GET
  * @property-read QueryParams $POST
  */
@@ -27,6 +28,7 @@ class Request extends Immutable
     {
         $data = [
            "requestMethod" => strtoupper($_SERVER["REQUEST_METHOD"]),
+           "requestPath" => parse_url($_SERVER["REQUEST_URI"])["path"],
            "GET" => new QueryParams($_GET)
         ];
         if (isset ($_POST))

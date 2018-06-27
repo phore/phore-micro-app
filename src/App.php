@@ -15,27 +15,27 @@ use Phore\Di\Container\Producer\DiValue;
 use Phore\MicroApp\Auth\Acl;
 use Phore\MicroApp\Auth\AuthManager;
 use Phore\MicroApp\Auth\AuthUser;
+use Phore\MicroApp\Router\Router;
 use Phore\MicroApp\Traits\_AppAssets;
-use Phore\MicroApp\Traits\_AppBasicAuth;
 use Phore\MicroApp\Traits\_AppEnv;
 use Phore\MicroApp\Traits\_AppErrorHandler;
 use Phore\MicroApp\Traits\_AppResponse;
-use Phore\MicroApp\Traits\_AppRoute;
 use Phore\MicroApp\Type\Request;
 
 /**
  * Class App
  *
  * @package Phore\MicroApp
- * @property-read Request $request
- * @property-read AuthManager authManager
- * @property-read Acl     $acl
- * @property-read AuthUser $authUser
+ * @property-read Request       $request
+ * @property-read AuthManager   $authManager
+ * @property-read Acl           $acl
+ * @property-read AuthUser      $authUser
+ * @property-read Router        $router
  *
  */
 class App extends DiContainer
 {
-    use _AppEnv, _AppRoute, _AppBasicAuth, _AppAssets, _AppErrorHandler, _AppResponse;
+    use _AppEnv, _AppAssets, _AppErrorHandler, _AppResponse;
 
 
     public function __construct()
@@ -48,16 +48,38 @@ class App extends DiContainer
         $this->add("request", new DiService(function () { return Request::Build(); }));
         $this->add("authManager", new DiValue($authManager = new AuthManager()));
         $this->add("acl", new DiValue(new Acl($authManager, $this)));
+        $this->add("router", new DiValue(new Router($this)));
         $this->add("authUser", new DiService(function () { return $this->authManager->getUser(); }));
     }
 
 
-
+    public function addModule(AppModule $module) : self
+    {
+        $module->register($this);
+        return $this;
+    }
 
 
     public function __get ($name)
     {
         return $this->resolve($name);
+    }
+
+
+    public function serve(Request $request=null)
+    {
+        if ($request === null)
+            $request = Request::Build();
+        $this->add("request", new DiValue($request));
+
+        $this->acl->validate($request);
+
+        try {
+            $this->dispatchAssetRoute($request);
+            $this->router->__dispatchRoute($request);
+        } catch (\Exception $e) {
+            $this->triggerException($e);
+        }
     }
 
 

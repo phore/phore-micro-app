@@ -10,6 +10,7 @@ namespace Phore\MicroApp\Auth;
 
 
 use Phore\MicroApp\App;
+use Phore\MicroApp\Router\Router;
 use Phore\MicroApp\Type\Request;
 
 class Acl
@@ -43,24 +44,24 @@ class Acl
 
     private $isValidated = false;
 
-    public function validate()
+    public function validate(Request $request)
     {
         $app = $this->app;
         $this->isValidated = true;
         foreach ($this->routes as $curRoute) {
 
             if (isset ($curRoute["route"])) {
-                if ( ! $app->is_route_match($curRoute["route"], $dummy))
+                if ( ! Router::IsMatching($curRoute["route"], $request, $dummy))
                     continue;
             }
             if (isset($curRoute["methods"])) {
-                if ( ! in_array($app->request->requestMethod, $curRoute["methods"]))
+                if ( ! in_array($request->requestMethod, $curRoute["methods"]))
                     continue;
             }
-            if (isset($curRoute["minRole"])) {
+            if (isset($curRoute["role"])) {
                 if ($this->authManager->getUser() === null)
                     continue;
-                if ( ! $this->authManager->getUser()->hasMinRole($curRoute["minRole"]))
+                if ( ! $this->authManager->getUser()->hasMinRole($curRoute["role"]))
                     continue;
             }
             if ( ! isset ($curRoute["action"]))

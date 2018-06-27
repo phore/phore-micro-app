@@ -24,37 +24,26 @@ use Phore\MicroApp\Type\RouteParams;
 require __DIR__ . "/../vendor/autoload.php";
 
 $app = new App();
+$app->activateExceptionErrorHandlers();
+
 $app->authManager->addAuthMech(new HttpBasicAuthMech());
 $app->authManager->addUserProvider(new BasicUserProvider(["admin:admin:@admin"], true));
 $app->acl->addRule(["route"=>"/*", "minRole"=>"@admin", "action"=>"ALLOW"]);
-$app->acl->validate();
 
-$app->activateExceptionErrorHandlers();
-$app->addAssetPath(CoreUI::COREUI_ASSET_PATH);
+
 $app->setOnExceptionHandler(new JsonExceptionHandler());
 
+$app->addAssetPath(CoreUI::COREUI_ASSET_PATH);
 $app->addVirtualAsset("all.js", CoreUI::COREUI_JS_FILES);
 $app->addVirtualAsset("all.css", CoreUI::COREUI_CSS_FILE);
-$app->dispatchAssetRoute();
 
 
-
-$app->route_match("/api/v1/*")
-    ->get(function () {
-        app()->outJSON(["fail"]);
-    })
-    ->post(function () {
-
-    });
-
-
-$app->route_match("/")->get(function () {
+$app->router->get("/", function () {
     $config = new CoreUi_Config_PageWithHeader();
     $config->mainContent[] = app()->authUser->userName;
     $page = new CoreUi_PageWithHeader($config);
     $page->out();
 });
-
 
 class SafeController extends Controller {
 
@@ -69,6 +58,7 @@ class SafeController extends Controller {
     }
 }
 
+$app->router->delegate("/muh", SafeController::class);
 
 
-$app->route_match("/muh")->delegate(SafeController::class);
+$app->serve();

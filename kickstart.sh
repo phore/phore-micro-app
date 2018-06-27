@@ -14,7 +14,6 @@
 # Author: Matthias Leuffen <leuffen@continue.de>
 #
 
-
 # Error Handling.
 trap 'on_error $LINENO' ERR;
 PROGNAME=$(basename $0)
@@ -91,6 +90,8 @@ then
     . $PROGPATH/.kickstartconfig
 fi
 
+
+
 _usage() {
     echo -e $COLOR_NC "Usage: $0 [<command>]
 
@@ -102,6 +103,14 @@ _usage() {
         $0 run <command>
             Execute kick <command> and return (unit-testing)
 
+        $0 build
+            Build a standalone container
+
+        $0 test
+            Execute kick test
+
+        $0 --ci-build
+            Build the service and push to gitlab registry (gitlab_ci_runner)
 
     EXAMPLES
 
@@ -223,6 +232,30 @@ ask_user() {
     exit 1;
 }
 
+_ci_build() {
+    echo "CI_BUILD: Building container.. (CI_* Env is preset by gitlab-ci-runner)";
+    BUILD_TAG=":$CI_BUILD_NAME"
+    if [ "$CI_REGISTRY" == "" ]
+    then
+        echo "[Error deploy]: Environment CI_REGISTRY not set"
+        exit 1
+    fi
+
+    case "$1" in
+
+    esac;
+
+    CMD="docker build -t $CI_REGISTRY_IMAGE$BUILD_TAG -f ./Dockerfile ."
+    echo "[Building] Starting '$CMD'";
+    eval $CMD
+
+    echo "Logging in to: $CI_REGISTRY_USER @ $CI_REGISTRY"
+    set -eo pipefail
+    echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    docker push $CI_REGISTRY_IMAGE$BUILD_TAG
+    echo "Push successfull..."
+    exit
+}
 
 
 
@@ -237,6 +270,12 @@ if [ -e "$HOME/.gitconfig" ]
 then
     echo "Mounting $HOME/.gitconfig..."
     DOCKER_OPT_PARAMS="$DOCKER_OPT_PARAMS -v $HOME/.gitconfig:/home/user/.gitconfig";
+fi
+
+if [ -e "$PROGPATH/.env" ]
+then
+    echo "Adding docker environment from $PROGPATH/.env (Development only)"
+    DOCKER_OPT_PARAMS="$DOCKER_OPT_PARAMS --env-file $PROGPATH/.env";
 fi
 
 
@@ -258,8 +297,11 @@ run_container() {
         -e "DEV_CONTAINER_NAME=$CONTAINER_NAME"         \
         -e "DEV_TTYID=[MAIN]"                           \
         -e "DEV_UID=$UID"                               \
+        -e "LINES=$LINES"                               \
+        -e "COLUMNS=$COLUMNS"                           \
+        -e "TERM=$TERM"                                 \
         -e "DEV_MODE=1"                                 \
-        -p $KICKSTART_PORT:4200                                      \
+        -p $KICKSTART_PORT:4200                         \
         $DOCKER_OPT_PARAMS                              \
         --name $CONTAINER_NAME                          \
         $USE_PIPF_VERSION $ARGUMENT
@@ -326,6 +368,10 @@ while [ "$#" -gt 0 ]; do
 
     --on-after-upgrade)
         exit 0;;
+
+    --ci-build)
+        _ci_build $2 $3
+        exit0;;
 
     -h|--help)
         _usage
