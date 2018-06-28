@@ -29,9 +29,9 @@ class Acl
     }
 
 
-    public function allow(string $route, $requireMinRole, array $methods=["HEADER", "GET", "POST"]) : self
+    public function allow(string $route, $role, array $methods=["HEADER", "GET", "POST"]) : self
     {
-        $this->routes[] = ["route" => $route, "minRole" => $requireMinRole, "methods" => $methods, "action"=>"ALLOW"];
+        $this->routes[] = ["route" => $route, "role" => $requireMinRole, "methods" => $methods, "action"=>"ALLOW"];
         return $this;
     }
 
