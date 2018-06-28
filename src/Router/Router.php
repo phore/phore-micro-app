@@ -104,6 +104,7 @@ class Router
 
     public function __dispatchRoute(Request $request)
     {
+        $ret = false;
         foreach ($this->routes as $curRoute) {
             $routeParams = [];
             $routeMatch = "*";
@@ -123,38 +124,46 @@ class Router
             if (isset ($curRoute["call"])) {
                 $fn = $curRoute["call"];
                 $ret = $fn(...$this->app->buildParametersFor($fn, $callParams));
+                if ($ret === true)
+                    break;
             } else if (isset($curRoute["delegate"])) {
                 $className = $curRoute["delegate"];
                 $controller = new $className(...$this->app->buildParametersForConstructor($className, $callParams));
                 if ( ! $controller instanceof Controller)
                     throw new \InvalidArgumentException("Class '$className' must be instance of Controller");
-                $controller->on(...
+                $ret = $controller->on(...
                     $this->app->buildParametersFor([$controller, "on"],
                         $callParams));
+                if ($ret === true)
+                    break;
                 switch ($request->requestMethod) {
                     case "GET":
-                        $controller->on_get(...
+                        $ret = $controller->on_get(...
                             $this->app->buildParametersFor([$controller, "on_get"],
                                 $callParams));
                         break;
                     case "POST":
-                        $controller->on_post(...
+                        $ret = $controller->on_post(...
                             $this->app->buildParametersFor([$controller, "on_post"],
                                 $callParams));
                         break;
                     case "DELETE":
-                        $controller->on_delete(...$this->app->buildParametersFor([
+                        $ret = $controller->on_delete(...$this->app->buildParametersFor([
                             $controller,
                             "on_delete"
                         ], $callParams));
                         break;
                     case "PUT":
-                        $controller->on_put(...
+                        $ret = $controller->on_put(...
                             $this->app->buildParametersFor([$controller, "on_put"],
                                 $callParams));
                         break;
                 }
+                if ($ret === true)
+                    break;
             }
         }
+        if ($ret !== true)
+            throw new \InvalidArgumentException("No action fulfilled request / route not defined.");
     }
 }

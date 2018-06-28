@@ -29,6 +29,7 @@ class JsonExceptionHandler
             "msg" => $e->getMessage(),
             "code" => $e->getCode(),
             "class" => get_class($e),
+            "file" => $e->getFile(). "({$e->getLine()})",
             "trace" => explode("\n", $e->getTraceAsString())
         ];
         echo json_encode($data);
