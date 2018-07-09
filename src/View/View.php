@@ -14,6 +14,6 @@ use Phore\MicroApp\App;
 interface View
 {
 
-    public function out(App $app);
+    public function out();
 
 }
