@@ -9,6 +9,7 @@ namespace Demo;
 use HtmlTheme\Pack\CoreUI\CoreUI;
 use HtmlTheme\Pack\CoreUI\CoreUi_Config_PageWithHeader;
 use HtmlTheme\Pack\CoreUI\CoreUi_PageWithHeader;
+use HtmlTheme\Pack\CoreUI\CoreUiModule;
 use Phore\MicroApp\App;
 use Phore\MicroApp\AppModule;
 use Phore\MicroApp\Auth\BasicUserProvider;
@@ -22,21 +23,20 @@ use Phore\MicroApp\Type\RouteParams;
 
 require __DIR__ . "/../vendor/autoload.php";
 
+// Configure the App
 $app = new App();
 $app->activateExceptionErrorHandlers();
+$app->setOnExceptionHandler(new JsonExceptionHandler());
 
+// Set Authentication
 $app->authManager->addAuthMech(new HttpBasicAuthMech());
 $app->authManager->addUserProvider(new BasicUserProvider(["admin:admin:@admin"], true));
 $app->acl->addRule(["route"=>"/*", "minRole"=>"@admin", "action"=>"ALLOW"]);
 
+// Add the CoreUI Theme Module (assets)
+$app->addModule(new CoreUiModule());
 
-$app->setOnExceptionHandler(new JsonExceptionHandler());
-
-$app->addAssetPath(CoreUI::COREUI_ASSET_PATH);
-$app->addVirtualAsset("all.js", CoreUI::COREUI_JS_FILES);
-$app->addVirtualAsset("all.css", CoreUI::COREUI_CSS_FILE);
-
-
+// Define routes, controllers etc.
 $app->router->get("/", function () {
     $config = new CoreUi_Config_PageWithHeader();
     $config->mainContent[] = app()->authUser->userName;
@@ -79,4 +79,5 @@ class SomeModule extends Controller implements AppModule {
 
 $app->addModule(new SomeModule());
 
+// Run the Application
 $app->serve();

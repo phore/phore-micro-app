@@ -72,7 +72,11 @@ _KICKSTART_CURRENT_VERSION="1.1.1"
 # This variables can be overwritten by ~/.kickstartconfig
 #
 KICKSTART_WIN_PATH=""
-KICKSTART_PORT=80
+
+# Publish ports - separated by semikolon (define it in .kickstartconfig)
+KICKSTART_PORTS="80:4200/tcp"
+# KICKSTART_PORTS="80:4200/tcp;81:4450/udp"
+
 KICKSTART_DOCKER_OPTS=""
 KICKSTART_DOCKER_RUN_OPTS=""
 
@@ -278,6 +282,12 @@ then
     DOCKER_OPT_PARAMS="$DOCKER_OPT_PARAMS --env-file $PROGPATH/.env";
 fi
 
+# Ports to be expsed
+PORTS=';' read -r -a array <<< "$KICKSTART_PORTS"
+for _port in "${array[@]}"
+do
+    DOCKER_OPT_PARAMS="$DOCKER_OPT_PARAMS -p $_port"
+done
 
 run_container() {
     echo -e $COLOR_GREEN"Loading container '$USE_PIPF_VERSION'..."
@@ -301,7 +311,6 @@ run_container() {
         -e "COLUMNS=$COLUMNS"                           \
         -e "TERM=$TERM"                                 \
         -e "DEV_MODE=1"                                 \
-        -p $KICKSTART_PORT:4200                         \
         $DOCKER_OPT_PARAMS                              \
         --name $CONTAINER_NAME                          \
         $USE_PIPF_VERSION $ARGUMENT

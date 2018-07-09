@@ -6,4 +6,8 @@ function app() : \Phore\MicroApp\App {
 }
 
 
+function href(array $path = []) : string {
+
+}
+
 

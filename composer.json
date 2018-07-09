@@ -18,12 +18,11 @@
   },
   "require": {
     "php" : ">7.1",
-    "phore/di-base": "*"
+    "phore/di-base": "^2.1"
   },
   "require-dev": {
     "continue/theme": "dev-master"
   },
   "suggest": {
-  },
-  "minimum-stability": "dev"
+  }
 }
