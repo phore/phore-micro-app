@@ -92,9 +92,13 @@ class AuthManager
 
     public function requestAuth(string $message)
     {
-        if ($this->lastUsedAuthMech === null)
+        $useAuthMech = $this->lastUsedAuthMech;
+        if ($useAuthMech === null) {
+            $useAuthMech = $this->authMechs[0];
+        }
+        if ($useAuthMech === null)
             throw new \InvalidArgumentException("No AuthMech registered in AuthManager.");
-        $this->lastUsedAuthMech->requestAuth($message);
+        $useAuthMech->requestAuth($message);
     }
 
 
