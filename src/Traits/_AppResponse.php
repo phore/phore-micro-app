@@ -34,4 +34,11 @@ trait _AppResponse
         exit;
     }
 
+    public function out($data, string $contentType="text/html", int $httpCode=200)
+    {
+        header("Content-Type: $contentType");
+        echo $data;
+        exit;
+    }
+
 }
