@@ -9,13 +9,12 @@
 namespace Phore\MicroApp\Auth;
 
 
-class HttpFormAuthMech implements AuthMech
+class HttpFormAuthMech implements AuthMech, SessionBasedAuthMech
 {
 
     public function hasAuthData(): bool
     {
-        session_start();
-        return true;
+        return false;
     }
 
     public function getAuthToken(): string
@@ -32,5 +31,31 @@ class HttpFormAuthMech implements AuthMech
     {
         header("Location: /login");
         exit;
+    }
+
+    public function getSessionUserId()
+    {
+        if ( ! isset ($_SESSION)) {
+            session_start();
+        }
+        if (isset($_SESSION["authUserId"]))
+            return $_SESSION["authUserId"];
+        return null;
+    }
+
+    public function setSessionUserId(string $userId)
+    {
+        if ( ! isset ($_SESSION)) {
+            session_start();
+        }
+        $_SESSION["authUserId"] = $userId;
+    }
+
+    public function unsetSessionUserId()
+    {
+        if ( ! isset ($_SESSION)) {
+            session_start();
+        }
+        $_SESSION["authUserId"] = null;
     }
 }

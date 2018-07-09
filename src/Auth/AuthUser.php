@@ -19,6 +19,7 @@ use Phore\MicroApp\Type\Immutable;
  * @property-read $roleMap  string[]
  * @property-read $roleId   int
  * @property-read $role     string
+ * @property-read $meta     array
  */
 class AuthUser extends Immutable
 {

@@ -15,14 +15,14 @@ class AuthManager
 
 
     /**
-     * @var UserProvider[]
+     * @var UserProvider
      */
-    private $userProvider = [];
+    private $userProvider = null;
 
     /**
-     * @var AuthMech[]
+     * @var AuthMech
      */
-    private $authMechs = [];
+    private $authMech = null;
 
     /**
      * @var AuthUser|null
@@ -36,12 +36,6 @@ class AuthManager
         "@user" => 2
     ];
 
-    /**
-     * @var AuthMech
-     */
-    private $lastUsedAuthMech = null;
-
-
     public function setRoleMap(array $roleMap) : self
     {
         $this->roleMap = $roleMap;
@@ -49,63 +43,79 @@ class AuthManager
     }
 
 
-
-
-    public function addUserProvider(UserProvider $userProvider) : self
+    public function setUserProvider(UserProvider $userProvider) : self
     {
-        $this->userProvider[] = $userProvider;
+        $this->userProvider = $userProvider;
         return $this;
     }
 
-    public function addAuthMech (AuthMech $authMech) : self
+    public function setAuthMech (AuthMech $authMech) : self
     {
-        $this->authMechs[] = $authMech;
+        $this->authMech = $authMech;
         return $this;
     }
 
-    protected function requireValidUser ()
+    protected function loadUser ()
     {
-        $useAuthMech = null;
-        foreach($this->authMechs as $curMech) {
-            if ($curMech->hasAuthData()) {
-                $useAuthMech = $curMech;
-                break;
+
+        if ($this->authMech instanceof SessionBasedAuthMech) {
+            $userId = $this->authMech->getSessionUserId();
+            if ($userId !== null) {
+                $this->authUser = $this->userProvider->getUserById($userId, $this->roleMap);
+                return;
             }
-            $useAuthMech = $curMech;
-        }
-        $this->lastUsedAuthMech = $useAuthMech;
-        if ($useAuthMech === null)
-            throw new \InvalidArgumentException("No matching AuthMech registred in AuthManager.");
-
-        if ( ! $useAuthMech->hasAuthData())
-            $useAuthMech->requestAuth("Please authenticate");
-
-        foreach ($this->userProvider as $curUserProvider) {
-            if(($user = $curUserProvider->validateUser($useAuthMech->getAuthToken(), $useAuthMech->getAuthPasswd(), $this->roleMap)) !== null) {
-                $this->authUser = $user;
+        } else {
+            if ($this->authMech->hasAuthData()) {
+                $this->authUser
+                    = $this->userProvider->validateUser($this->authMech->getAuthToken(),
+                    $this->authMech->getAuthPasswd(), $this->roleMap);
+                return;
             }
         }
+        $this->authMech->requestAuth("");
+    }
 
 
+    public function doLogout()
+    {
+        if ( ! $this->authMech instanceof SessionBasedAuthMech)
+            throw new \InvalidArgumentException("Cannot logout from non session backed authMech");
+
+        $this->authMech->unsetSessionUserId();
+    }
+
+
+    /**
+     * @param string $userId
+     * @param string $passwd
+     *
+     * @return bool
+     * @throws InvalidUserException
+     */
+    public function doAuth (string $userId, string $passwd)
+    {
+
+        if(($user = $this->userProvider->validateUser($userId, $passwd, $this->roleMap)) !== null) {
+            $this->authUser = $user;
+            if ($this->authMech instanceof SessionBasedAuthMech)
+                $this->authMech->setSessionUserId($userId);
+            return true;
+        }
+
+        throw new InvalidUserException("Cannot login user '$userId'");
     }
 
 
     public function requestAuth(string $message)
     {
-        $useAuthMech = $this->lastUsedAuthMech;
-        if ($useAuthMech === null) {
-            $useAuthMech = $this->authMechs[0];
-        }
-        if ($useAuthMech === null)
-            throw new \InvalidArgumentException("No AuthMech registered in AuthManager.");
-        $useAuthMech->requestAuth($message);
+        $this->authMech->requestAuth($message);
     }
 
 
     public function getUser()
     {
         if ($this->authUser === null)
-            $this->requireValidUser();
+            $this->loadUser();
         return $this->authUser;
     }
 }
