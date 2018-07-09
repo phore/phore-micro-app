@@ -63,8 +63,9 @@ trait _AppAssets
             header("Content-Type: {$this->mimeTab[$ext]}");
             foreach ($this->virtualAsset[$assetPath] as $curFile) {
                 echo file_get_contents($curFile);
-                exit;
+
             }
+            exit;
         }
 
         foreach ($this->assetPath as $curPath) {
