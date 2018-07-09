@@ -62,8 +62,7 @@ trait _AppAssets
         if (isset ($this->virtualAsset[$assetPath])) {
             header("Content-Type: {$this->mimeTab[$ext]}");
             foreach ($this->virtualAsset[$assetPath] as $curFile) {
-                echo file_get_contents($curFile);
-
+                echo file_get_contents($curFile) . "\n";
             }
             exit;
         }
@@ -78,7 +77,6 @@ trait _AppAssets
             }
         }
         throw new HttpException("Asset '$assetPath' not found.", 404);
-
     }
 
 }
