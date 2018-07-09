@@ -77,7 +77,6 @@ trait _AppAssets
             }
         }
         throw new HttpException("Asset '$assetPath' not found.", 404);
-
     }
 
 }
