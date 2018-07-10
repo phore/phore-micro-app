@@ -44,12 +44,13 @@ class App extends DiContainer
         if (self::$_instance !== null)
             throw new \InvalidArgumentException("Multiple App instanciation");
         self::$_instance = $this;
-        $this->add(get_class($this), new DiValue($this));
-        $this->add("request", new DiService(function () { return Request::Build(); }));
-        $this->add("authManager", new DiValue($authManager = new AuthManager()));
-        $this->add("acl", new DiValue(new Acl($authManager, $this)));
-        $this->add("router", new DiValue(new Router($this)));
-        $this->add("authUser", new DiService(function () { return $this->authManager->getUser(); }));
+        $this->define(get_class($this), new DiValue($this));
+        $this->define("app", new DiValue($this));
+        $this->define("request", new DiService(function () { return Request::Build(); }));
+        $this->define("authManager", new DiValue($authManager = new AuthManager()));
+        $this->define("acl", new DiValue(new Acl($authManager, $this)));
+        $this->define("router", new DiValue(new Router($this)));
+        $this->define("authUser", new DiService(function () { return $this->authManager->getUser(); }));
     }
 
 
