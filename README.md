@@ -1,7 +1,8 @@
 # Minimalistic Microservice Framework
 
 This documentation is written along the guidelines of educational grade documentation discussed in the 
-[infracamp](https://infracamp.com) project.
+[infracamp](https://github.com/infracamp/infracamp/blob/master/DOCUMENTATION_GUIDE.md) project. Please ask and
+document issues.
 
 ## Goals
 
@@ -19,12 +20,11 @@ $app = new App();
 $app->acl->addRule(aclRule()->ALLOW());                     // Allow all requests
 
 $app->router
-    ->get("/", function() use ($app) {                      // Define a Action for HTTP-GET-Requests to /
-        $app->out("Hello World");
-    })
-    ->post("/", function(PostData $post) use ($app) {       // Define a Action for HTTP-POST-Requests to /
-        $app->out("Your post-data: ". print_r($post));
-    });
+    ->get("/",                                              // Define a Action for HTTP-GET-Requests to /
+        function() use ($app) {                             
+            $app->out("Hello World");                       // Hello World!
+        }
+    );
     
 $app->serve();                                              // Run the App
 ```
