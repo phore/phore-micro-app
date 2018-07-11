@@ -34,7 +34,7 @@ We suggest using [composer](http://getcomposer.com):
 composer require phore/micro-app
 ``` 
 
-## ACL (Access Control Lists / Firewall) [Details](doc/acl/acl.md) | [Example](doc/acl/acl.php) | [FAQ](doc/acl/acl-faq.md)
+## ACL (Access Control Lists / Firewall) <small>[Details](doc/acl/acl.md) | [Example](doc/acl/acl.php) | [FAQ](doc/acl/acl-faq.md)</small>
 
 
 
