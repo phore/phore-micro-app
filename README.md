@@ -8,7 +8,6 @@
 - Fluent Api
 - Role-Based Authentication
 
-
 ## Quickstart
 
 ```index.php:```
@@ -27,12 +26,26 @@ $app->router
 $app->serve();                                              // Run the App
 ```
 
+## Installation
+
+We suggest using [composer](http://getcomposer.com):
+
+```
+composer require phore/micro-app
+``` 
+
 ## ACL (Access Control Lists / Firewall)
 
+[More about Access Control Lists](doc/acl/acl.md) | 
+[Working Example](doc/acl/acl.php) | 
+[Solutions FAQ](doc/acl/acl-faq.md)
 
 ***Access Control Lists*** define which User/IP may access which route in
 your application. It will initiate the Authentication Process (see Authentication)
 or reject the request.
+
+ACLs will be processed from top to bottom. The first rule that matches the request
+will win.
 
 ### Examples
 
@@ -49,31 +62,6 @@ or reject the request.
 
 ***By default phore-micro-app will deny all requests. So you have to specify explicitly
 which requests to allow***
-
-ACLs will be processed from top to bottom. The first rule that matches the request
-will win.
-
-The easiest ACL is to ***allow*** Access to all routes:
-
-```php
-$app->acl->addRule(aclRule()->route("/*")->ALLOW());
-```
-
-You can allow Access to (e.g. api routes) only for specific User-Roles or subnets:
-
-```php
-$app->acl->addRule(aclRule()->network("10.0.0.0/8")->ALLOW());
-$app->acl->addRule(aclRule()->role("@admin")->ALLOW());
-```
-
-To allow only authenticated @admin Group accessing from a private subnet to access 
-routes `/api/admin`:
-
-```php
-$app->acl->addRule(aclRule()->route("/api/admin/*")->role("@admin")->network("10.0.0.0/8")->ALLOW());
-```
-
-***ALLOW*** if route matches `/api/admin/*` ***AND*** role matches `@admin` ***AND** network matches `10.0.0.0/8`
 
 ## Routing
 
