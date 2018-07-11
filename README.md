@@ -13,12 +13,19 @@
 ```index.php:```
 ```
 $app = new App();
-
-$app->route_match("/")
-    ->get(function() {
+$app->acl->addRule()
+$app->router->get("/", function() {
         app()->out("Hello World");
     })
-    ->post(function() {
+    ->post("/", function() {
         app()->out("Your post-data: ". print_r($_POST));
     });
 ```
+
+## ACL
+
+## Routing
+
+## Dependency Injection
+
+## Authentication & Authorization

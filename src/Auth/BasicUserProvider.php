@@ -23,6 +23,9 @@ class BasicUserProvider implements UserProvider
 
 
 
+
+
+
     public function validateUser(string $userName, string $userPasswd, array $roleMap)
     {
         foreach ($this->passwd as $curLine) {
