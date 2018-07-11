@@ -34,11 +34,9 @@ We suggest using [composer](http://getcomposer.com):
 composer require phore/micro-app
 ``` 
 
-## ACL (Access Control Lists / Firewall)
+## ACL (Access Control Lists / Firewall) [Details](doc/acl/acl.md) | [Example](doc/acl/acl.php) | [FAQ](doc/acl/acl-faq.md)
 
-[More about Access Control Lists](doc/acl/acl.md) | 
-[Working Example](doc/acl/acl.php) | 
-[Solutions FAQ](doc/acl/acl-faq.md)
+
 
 ***Access Control Lists*** define which User/IP may access which route in
 your application. It will initiate the Authentication Process (see Authentication)
