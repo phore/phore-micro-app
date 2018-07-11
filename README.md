@@ -14,18 +14,20 @@
 ```index.php:```
 ```php
 $app = new App();
-$app->acl->addRule(aclRule()->ALLOW()); // Allow all requests
+$app->acl->addRule(aclRule()->ALLOW());                     // Allow all requests
 
-$app->router->get("/", function() {
-        app()->out("Hello World");
+$app->router
+    ->get("/", function() use ($app) {                      // Define a Action for HTTP-GET-Requests to /
+        $app->out("Hello World");
     })
-    ->post("/", function() {
-        app()->out("Your post-data: ". print_r($_POST));
+    ->post("/", function(PostData $post) use ($app) {       // Define a Action for HTTP-POST-Requests to /
+        $app->out("Your post-data: ". print_r($post));
     });
-$app->serve();
+    
+$app->serve();                                              // Run the App
 ```
 
-## ACL
+## ACL (Access Control Lists / Firewall)
 
 
 ***Access Control Lists*** define which User/IP may access which route in
