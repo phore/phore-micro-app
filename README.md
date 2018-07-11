@@ -20,6 +20,7 @@ $app->router->get("/", function() {
     ->post("/", function() {
         app()->out("Your post-data: ". print_r($_POST));
     });
+$app->serve();
 ```
 
 ## ACL
