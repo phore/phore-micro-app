@@ -86,7 +86,7 @@ class App extends DiContainer
             $this->dispatchAssetRoute($request);
             $ret = $this->router->__dispatchRoute($request);
             if ($this->responseHandler === null)
-                throw new InvalidArgumentException("No response handler defined.");
+                throw new \InvalidArgumentException("No response handler defined.");
             $this->responseHandler->handle($ret);
         } catch (\Exception $e) {
             $this->triggerException($e);

@@ -94,7 +94,6 @@ class Router
                     "request" => $request
                 ]),
             "routeParams" => $routeParams,
-            "app" => $this->app,
             "GET" => $request->GET
 
         ];
@@ -106,7 +105,7 @@ class Router
 
     public function __dispatchRoute(Request $request)
     {
-        $ret = false;
+        $ret = null;
         foreach ($this->routes as $curRoute) {
             $routeParams = [];
             $routeMatch = "*";
@@ -132,7 +131,17 @@ class Router
 
             if (isset($curRoute["delegate"])) {
                 $className = $curRoute["delegate"];
-                $controller = new $className(...$this->app->buildParametersForConstructor($className, $callParams));
+                if (is_string($className)) {
+                    $controller = new $className(
+                        ...
+                        $this->app->buildParametersForConstructor(
+                            $className,
+                            $callParams
+                        )
+                    );
+                } else {
+                    $controller = $className;
+                }
 
                 if (method_exists($controller, "on")) {
                     $ret = $controller->on(
