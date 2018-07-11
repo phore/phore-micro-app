@@ -1,5 +1,8 @@
 # Minimalistic Microservice Framework
 
+This documentation is written along the guidelines of educational grade documentation discussed in the 
+[infracamp](https://infracamp.com) project.
+
 ## Goals
 
 - Minimal Footprint
@@ -34,9 +37,8 @@ We suggest using [composer](http://getcomposer.com):
 composer require phore/micro-app
 ``` 
 
-## ACL (Access Control Lists / Firewall) 
+## [ACL (Access Control Lists / Firewall)](doc/acl/acl.md) *([Example](doc/acl/acl.php), [FAQ](doc/acl/acl-faq.md))*
 
-> [Details](doc/acl/acl.md) | [Example](doc/acl/acl.php) | [FAQ](doc/acl/acl-faq.md)
 
 ***Access Control Lists*** define which User/IP may access which route in
 your application. It will initiate the Authentication Process (see Authentication)
