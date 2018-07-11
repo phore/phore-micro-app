@@ -12,7 +12,7 @@
 ## Quickstart
 
 ```index.php:```
-```
+```php
 $app = new App();
 $app->acl->addRule(aclRule()->ALLOW()); // Allow all requests
 
@@ -40,13 +40,13 @@ will win.
 
 The easiest ACL is to ***allow*** Access to all routes:
 
-```
+```php
 $app->acl->addRule(aclRule()->route("/*")->allow());
 ```
 
 You can allow Access to (e.g. api routes) only for specific User-Roles or subnets:
 
-```
+```php
 $app->acl->addRule(aclRule()->network("10.0.0.0/8")->allow());
 $app->acl->addRule(aclRule()->role("@admin")->allow());
 ```
@@ -54,7 +54,7 @@ $app->acl->addRule(aclRule()->role("@admin")->allow());
 To allow only authenticated @admin Group accessing from a private subnet to access 
 routes `/api/admin`:
 
-```
+```php
 $app->acl->addRule(aclRule()->route("/api/admin/*")->role("@admin")->network("10.0.0.0/8")->allow());
 ```
 
