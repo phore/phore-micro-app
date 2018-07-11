@@ -9,10 +9,17 @@
 namespace Phore\MicroApp\Traits;
 
 
+use Phore\MicroApp\Handler\ResponseHandler;
+
 trait _AppResponse
 {
 
     protected $responseHeader;
+
+    /**
+     * @var ResponseHandler
+     */
+    protected $responseHandler;
 
     /**
      * @param $name
@@ -23,6 +30,12 @@ trait _AppResponse
     public function withResponseHeader($name, $value)
     {
         $this->responseHeader[$name] = $value;
+        return $this;
+    }
+
+    public function setResponseHandler(ResponseHandler $responseHandler) : self
+    {
+        $this->responseHandler = $responseHandler;
         return $this;
     }
 

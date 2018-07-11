@@ -13,7 +13,8 @@
 ```index.php:```
 ```
 $app = new App();
-$app->acl->addRule()
+$app->acl->addRule(aclRule()->ALLOW()); // Allow all requests
+
 $app->router->get("/", function() {
         app()->out("Hello World");
     })
@@ -25,8 +26,14 @@ $app->serve();
 
 ## ACL
 
+
+
 ## Routing
 
+## Assets
+
 ## Dependency Injection
+
+## Error Handling
 
 ## Authentication & Authorization

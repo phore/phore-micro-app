@@ -9,6 +9,7 @@
 namespace Phore\MicroApp;
 
 
+use http\Exception\InvalidArgumentException;
 use Phore\Di\Container\DiContainer;
 use Phore\Di\Container\Producer\DiService;
 use Phore\Di\Container\Producer\DiValue;
@@ -67,17 +68,26 @@ class App extends DiContainer
     }
 
 
+    public function call($route, array $params = [])
+    {
+
+    }
+
+
     public function serve(Request $request=null)
     {
         if ($request === null)
             $request = Request::Build();
-        $this->add("request", new DiValue($request));
+        $this->define("request", new DiValue($request));
 
         $this->acl->validate($request);
 
         try {
             $this->dispatchAssetRoute($request);
-            $this->router->__dispatchRoute($request);
+            $ret = $this->router->__dispatchRoute($request);
+            if ($this->responseHandler === null)
+                throw new InvalidArgumentException("No response handler defined.");
+            $this->responseHandler->handle($ret);
         } catch (\Exception $e) {
             $this->triggerException($e);
         }

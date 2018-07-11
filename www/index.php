@@ -45,7 +45,8 @@ $app->router->get("/", function () {
     $page->out();
 });
 
-class SafeController extends Controller {
+class SafeController {
+    use Controller;
 
     public function on_get(
         Request $request,
@@ -61,8 +62,7 @@ class SafeController extends Controller {
 $app->router->delegate("/muh", SafeController::class);
 
 
-class SomeModule extends Controller implements AppModule {
-
+class SomeModule implements AppModule {
     public function on_get(
         Request $request,
         Route $route,
