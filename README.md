@@ -14,7 +14,8 @@
 ```index.php:```
 ```
 $app = new App();
-$app->acl->addRule()
+$app->acl->addRule(aclRule()->ALLOW()); // Allow all requests
+
 $app->router->get("/", function() {
         app()->out("Hello World");
     })
@@ -25,6 +26,7 @@ $app->serve();
 ```
 
 ## ACL
+
 
 ***Access Control Lists*** define which User/IP may access which route in
 your application. It will initiate the Authentication Process (see Authentication)
@@ -56,8 +58,13 @@ routes `/api/admin`:
 $app->acl->addRule(aclRule()->route("/api/admin/*")->role("@admin")->network("10.0.0.0/8")->allow());
 ```
 
+
 ## Routing
 
+## Assets
+
 ## Dependency Injection
+
+## Error Handling
 
 ## Authentication & Authorization

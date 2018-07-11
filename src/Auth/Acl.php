@@ -10,6 +10,7 @@ namespace Phore\MicroApp\Auth;
 
 
 use Phore\MicroApp\App;
+use Phore\MicroApp\Helper\IPSet;
 use Phore\MicroApp\Router\Router;
 use Phore\MicroApp\Type\Request;
 
@@ -20,7 +21,10 @@ class Acl
 
     private $app;
 
-    private $routes = [];
+    /**
+     * @var AclRule[]
+     */
+    private $rules = [];
 
     public function __construct(AuthManager $authManager, App $app)
     {
@@ -28,51 +32,73 @@ class Acl
         $this->app = $app;
     }
 
-
-    public function allow(string $route, $role, array $methods=["HEADER", "GET", "POST"]) : self
+    public function addRule(AclRule $rule) : self
     {
-        $this->routes[] = ["route" => $route, "role" => $requireMinRole, "methods" => $methods, "action"=>"ALLOW"];
-        return $this;
-    }
-
-    public function addRule(array $rule) : self
-    {
-        $this->routes[] = $rule;
+        $this->rules[] = $rule;
         return $this;
     }
 
 
     private $isValidated = false;
 
+
+    /**
+     * ***SECURITY RELEVANT FUNCTION***
+     *
+     * Think twice before changing a thing!
+     *
+     * Checks the rule agaist the request. Return the Action if rule applies
+     * otherwise return null.
+     *
+     * @param AclRule $rule
+     * @param Request $request
+     *
+     * @return string|null Action if rule applies - null otherwise
+     */
+    protected function ruleApplies(AclRule $rule, Request $request)
+    {
+        if (($route = $rule->__get_value("route")) !== null) {
+            if ( ! Router::IsMatching($route, $request, $dummy))
+                return null;
+        }
+        if (($methods = $rule->__get_value("methods")) !== null) {
+            if ( ! in_array($request->requestMethod, $methods))
+                return null;
+        }
+        if (($networks = $rule->__get_value("networks")) !== null) {
+            $networksIpSet = new IPSet(explode(" ", $networks));
+            if ( ! $networksIpSet->match($request->requestIp)) {
+                return null;
+            }
+        }
+        if (($role = $rule->__get_value("role")) !== null) {
+            if ($this->authManager->getUser() === null)
+                return null;
+            if ( ! $this->authManager->getUser()->hasMinRole($role))
+                return null;
+        }
+        return $rule->__get_value("action");
+    }
+
+
+
     public function validate(Request $request)
     {
         $app = $this->app;
         $this->isValidated = true;
-        foreach ($this->routes as $curRoute) {
+        foreach ($this->rules as $curRule) {
+            $action = $this->ruleApplies($curRule, $request);
+            if ($action === null) {
+                continue; // Check next rule
+            }
 
-            if (isset ($curRoute["route"])) {
-                if ( ! Router::IsMatching($curRoute["route"], $request, $dummy))
-                    continue;
-            }
-            if (isset($curRoute["methods"])) {
-                if ( ! in_array($request->requestMethod, $curRoute["methods"]))
-                    continue;
-            }
-            if (isset($curRoute["role"])) {
-                if ($this->authManager->getUser() === null)
-                    continue;
-                if ( ! $this->authManager->getUser()->hasMinRole($curRoute["role"]))
-                    continue;
-            }
-            if ( ! isset ($curRoute["action"]))
-                throw new \InvalidArgumentException("Invalid action in acl: " . print_r($curRoute, true));
-            if ($curRoute["action"] === "ALLOW") {
+            if ($action === AclRule::ACTION_ALLOW) {
                 return true;
-            } else if ($curRoute["action"] === "DENY") {
+            } else if ($action === AclRule::ACTION_DENY) {
                 $this->authManager->requestAuth("Access denied by acl.");
                 return false;
             } else {
-                throw new \InvalidArgumentException("Invalid ACL Action: '{$curRoute["action"]}");
+                throw new \InvalidArgumentException("Invalid ACL Action: '{$curRule["action"]}");
             }
         }
         $this->authManager->requestAuth("Access denied by acl.");

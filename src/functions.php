@@ -6,6 +6,10 @@ function app() : \Phore\MicroApp\App {
 }
 
 
+function aclRule(string $alias = null) : \Phore\MicroApp\Auth\AclRule {
+    return new \Phore\MicroApp\Auth\AclRule($alias);
+}
+
 function href(array $path = []) : string {
 
 }

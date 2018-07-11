@@ -12,6 +12,7 @@ use HtmlTheme\Pack\CoreUI\CoreUi_PageWithHeader;
 use HtmlTheme\Pack\CoreUI\CoreUiModule;
 use Phore\MicroApp\App;
 use Phore\MicroApp\AppModule;
+use Phore\MicroApp\Auth\AclRule;
 use Phore\MicroApp\Auth\BasicUserProvider;
 use Phore\MicroApp\Auth\HttpBasicAuthMech;
 use Phore\MicroApp\Controller\Controller;
@@ -29,9 +30,9 @@ $app->activateExceptionErrorHandlers();
 $app->setOnExceptionHandler(new JsonExceptionHandler());
 
 // Set Authentication
-$app->authManager->addAuthMech(new HttpBasicAuthMech());
-$app->authManager->addUserProvider(new BasicUserProvider(["admin:admin:@admin"], true));
-$app->acl->addRule(["route"=>"/*", "minRole"=>"@admin", "action"=>"ALLOW"]);
+$app->authManager->setAuthMech(new HttpBasicAuthMech());
+$app->authManager->setUserProvider(new BasicUserProvider(["admin:admin:@admin:{}"], true));
+$app->acl->addRule(\aclRule()->route("/*")->ALLOW());
 
 // Add the CoreUI Theme Module (assets)
 $app->addModule(new CoreUiModule());
@@ -44,7 +45,8 @@ $app->router->get("/", function () {
     $page->out();
 });
 
-class SafeController extends Controller {
+class SafeController {
+    use Controller;
 
     public function on_get(
         Request $request,
@@ -60,8 +62,7 @@ class SafeController extends Controller {
 $app->router->delegate("/muh", SafeController::class);
 
 
-class SomeModule extends Controller implements AppModule {
-
+class SomeModule implements AppModule {
     public function on_get(
         Request $request,
         Route $route,

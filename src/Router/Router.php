@@ -9,6 +9,7 @@
 namespace Phore\MicroApp\Router;
 
 
+use http\Exception\InvalidArgumentException;
 use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
 use Phore\MicroApp\Type\Request;
@@ -104,7 +105,7 @@ class Router
 
     public function __dispatchRoute(Request $request)
     {
-        $ret = false;
+        $ret = null;
         foreach ($this->routes as $curRoute) {
             $routeParams = [];
             $routeMatch = "*";
@@ -124,46 +125,71 @@ class Router
             if (isset ($curRoute["call"])) {
                 $fn = $curRoute["call"];
                 $ret = $fn(...$this->app->buildParametersFor($fn, $callParams));
-                if ($ret === true)
-                    break;
-            } else if (isset($curRoute["delegate"])) {
+                if ($ret !== null)
+                    return $ret;
+            }
+
+            if (isset($curRoute["delegate"])) {
                 $className = $curRoute["delegate"];
-                $controller = new $className(...$this->app->buildParametersForConstructor($className, $callParams));
-                if ( ! $controller instanceof Controller)
-                    throw new \InvalidArgumentException("Class '$className' must be instance of Controller");
-                $ret = $controller->on(...
-                    $this->app->buildParametersFor([$controller, "on"],
-                        $callParams));
-                if ($ret === true)
-                    break;
+                if (is_string($className)) {
+                    $controller = new $className(
+                        ...
+                        $this->app->buildParametersForConstructor(
+                            $className,
+                            $callParams
+                        )
+                    );
+                } else {
+                    $controller = $className;
+                }
+
+                if (method_exists($controller, "on")) {
+                    $ret = $controller->on(
+                        ...
+                        $this->app->buildParametersFor(
+                            [$controller, "on"],
+                            $callParams
+                        )
+                    );
+                }
+                if ($ret !== null)
+                    return $ret;
+
                 switch ($request->requestMethod) {
                     case "GET":
+                        if ( ! method_exists($controller, "on_get"))
+                            throw new InvalidArgumentException("Controller '$className' is missing on_get() method to handle GET requests.");
                         $ret = $controller->on_get(...
                             $this->app->buildParametersFor([$controller, "on_get"],
                                 $callParams));
                         break;
                     case "POST":
+                        if ( ! method_exists($controller, "on_post"))
+                            throw new InvalidArgumentException("Controller '$className' is missing on_post() method to handle POST requests.");
                         $ret = $controller->on_post(...
                             $this->app->buildParametersFor([$controller, "on_post"],
                                 $callParams));
                         break;
                     case "DELETE":
+                        if ( ! method_exists($controller, "on_delete"))
+                            throw new InvalidArgumentException("Controller '$className' is missing on_delete() method to handle DELETE requests.");
                         $ret = $controller->on_delete(...$this->app->buildParametersFor([
                             $controller,
                             "on_delete"
                         ], $callParams));
                         break;
                     case "PUT":
+                        if ( ! method_exists($controller, "on_put"))
+                            throw new InvalidArgumentException("Controller '$className' is missing on_put() method to handle PUT requests.");
                         $ret = $controller->on_put(...
                             $this->app->buildParametersFor([$controller, "on_put"],
                                 $callParams));
                         break;
                 }
-                if ($ret === true)
-                    break;
+                if ($ret !== null)
+                    return $ret;
             }
         }
-        if ($ret !== true)
-            throw new \InvalidArgumentException("No action fulfilled request / route not defined.");
+        throw new \InvalidArgumentException("No action fulfilled request / route not defined.");
     }
 }
