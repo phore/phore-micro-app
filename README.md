@@ -94,13 +94,13 @@ and may contain any service defined in DiContainer.
 
 Request specific parameters are:
 
-| Parameter Name | ClassName | Description |
-|----------------|-----------|-------------|
-| `$request`     | `Request` | The full request object |
-| `$route`       | `Route`   | The current route object|
-| `$routeParams` | `RouteParams` | Container with parameters |
-| `$GET`         | `QueryParams` | Query parameters          |
-| `$POST`        | `QueryParams` | Parameters send by HTTP-POST |
+| Parameter Name | ClassName        | Description                   |
+|----------------|------------------|-------------------------------|
+| `$request`     | `Request`        | The full request object       |
+| `$route`       | `Route`          | The current route object      |
+| `$routeParams` | `RouteParams`    | Container with parameters     |
+| `$GET`         | `QueryParams`    | Query parameters              |
+| `$POST`        | `QueryParams`    | Parameters send by HTTP-POST  |
 
 
 ## Assets *([Example](doc/assets/assets.php))*
@@ -127,8 +127,30 @@ more directories, the asset-manager will try to find the asset.
 
 ## Dependency Injection
 
+The app-class is a dependency injection container. You can register
+values or services using the `define()` method.
 
+- Define a value to property `version`:
+  ```php
+  $app->define("version", new DiValue("1.0.1"));
+  echo $app->version;
+  ```
+  
+- Define a factory to property `configFile`:
+  ```php
+  $app->define("configFile", new DiService(function() {
+      return file_get_contents("config-file.json") 
+  });
+  echo $app->configFile;
+  ```
 
 ## Error Handling
+
+The system has build-in functions for error-handling:
+
+- Activate `json` error/exception handling:
+  ```
+  $app->setOnExceptionHandler(new JsonExceptionHandler());
+  ```
 
 ## Authentication & Authorization
