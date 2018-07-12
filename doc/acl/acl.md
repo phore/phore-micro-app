@@ -2,6 +2,21 @@
 
 [See working example](acl.php);
 
+
+## Possible selectors
+
+| Selector | Description |
+|----------|----------------------|
+| `route("/some/route")`          | Match a specific route (Wildcards `*` allowed) |
+| `role("@roleName")`             | A user must be authenticated and have minimum role |
+| `networks("10.0.0.0/8 127.0.0.1/24")` | Match Requesting IP |
+| `methods(["GET", "POST"])`            | Match a request type |
+
+
+
+
+
+
 The easiest ACL is to ***allow*** Access to all routes:
 
 ```php

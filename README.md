@@ -154,3 +154,10 @@ The system has build-in functions for error-handling:
   ```
 
 ## Authentication & Authorization
+
+## Role based Authentication
+
+Predefined Group hierachy:
+
+- Highest Priority `@owner` => `@admin` => `@member` => `@user` Lowest Priority
+                            
