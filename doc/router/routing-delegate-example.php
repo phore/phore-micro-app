@@ -11,32 +11,41 @@ require __DIR__ . "/../vendor/autoload.php";
 $app = new App();
 $app->acl->addRule(aclRule()->ALLOW());         // <- Allow all requests (Access Control Lists)
 
-
-
-
+// Define a Controller Class
 class HelloWorldCtrl {
     use Controller;
+
+    public function on()
+    {
+        echo "This will be printed in all Requests";
+        return null; // Mark request as not fulfilled.
+    }
 
     public function on_get()
     {
         echo "Hello World";
         return true;
     }
+
+    public function on_post()
+    {
+        echo "Hello World (POST Request)";
+        return true;
+    }
+
+    public function on_put()
+    {
+        echo "Hello World (PUT Request)";
+        return true;
+    }
+
+    public function on_delete()
+    {
+        echo "Hello World (DELETE Request)";
+        return true;
+    }
 }
 
-
-
-// Handle HTTP-GET Requests to /
-$app->router->get("/", function () {
-    echo "<html><b>Hello</b> World</html>";
-    return true;
-});
-
-// Handle Form-POST Requests to /login
-$app->router->post("/login", function (QueryParams $POST) {
-    /* Do some login stuff here */
-    return true;
-});
-
+$app->router->delegate("/hello/world", HelloWorldCtrl::class);
 
 $app->serve();                                  // Run the app
