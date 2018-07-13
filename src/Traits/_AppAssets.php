@@ -26,7 +26,10 @@ trait _AppAssets
         "js"  => "text/javascript",
         "png" => "image/png",
         "jpg" => "image/jpg",
-        "gif" => "image/gif"
+        "gif" => "image/gif",
+        "woff" => "application/font-woff",
+        "woff2" => "application/font-woff2",
+        "ttf" => "application/font-ttf",
     ];
 
     public function addAssetPath(string $path)
