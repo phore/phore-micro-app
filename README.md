@@ -108,11 +108,13 @@ Request specific parameters are:
 Assets are located below the `/asset/`-route. You can define one or
 more directories, the asset-manager will try to find the asset.
 
+`/asset/*` will be allowed for all requests in ACL. So don't put
+sensitive data here.
+
 - Allow all requests to `/asset/*` and link them to local assets:
   ```php
-  $app->acl->addRule(aclRule()->route("/asset/*")->ALLOW());
-  $app->addAssetPath(__DIR__ . "/asset_data/");
-  $app->addAssetPath(__DIR__ . "/alt_asset_data/");
+  $app->addAssetSearchPath(__DIR__ . "/asset_data/");
+  $app->addAssetSearchPath(__DIR__ . "/alt_asset_data/");
   ```
   Request to `/asset/css/some.css`: The asset-manager will try to
   find the file in `/asset_data/css/some.css`. If it does not exist there,

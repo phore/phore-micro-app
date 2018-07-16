@@ -18,7 +18,7 @@ use Phore\MicroApp\Type\RouteParams;
 trait _AppAssets
 {
 
-    protected $assetPath = [];
+    protected $assetSearchPath = [];
     protected $virtualAsset = [];
 
     protected $mimeTab = [
@@ -32,9 +32,9 @@ trait _AppAssets
         "ttf" => "application/font-ttf",
     ];
 
-    public function addAssetPath(string $path)
+    public function addAssetSearchPath(string $path)
     {
-        $this->assetPath[] = $path;
+        $this->assetSearchPath[] = $path;
         return $this;
     }
 
@@ -70,7 +70,7 @@ trait _AppAssets
             exit;
         }
 
-        foreach ($this->assetPath as $curPath) {
+        foreach ($this->assetSearchPath as $curPath) {
             if (file_exists($curPath . "/" . $assetPath)) {
                 header("Content-Type: {$this->mimeTab[$ext]}");
                 $fp = fopen($curPath . "/" . $assetPath, "r");

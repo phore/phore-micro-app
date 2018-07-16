@@ -52,6 +52,9 @@ class App extends DiContainer
         $this->define("acl", new DiValue(new Acl($authManager, $this)));
         $this->define("router", new DiValue(new Router($this)));
         $this->define("authUser", new DiService(function () { return $this->authManager->getUser(); }));
+
+        // Allow Asset-Route
+        $this->acl->addRule(aclRule()->route("/asset/*")->methods(["GET", "HEADER"])->ALLOW());
     }
 
 
