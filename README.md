@@ -153,6 +153,24 @@ The system has build-in functions for error-handling:
   $app->setOnExceptionHandler(new JsonExceptionHandler());
   ```
 
+## API Usage: Default Result Handler
+
+Instead of formating the Result your own, the framework uses a
+result-handler to format results returned by `return` in controller.
+
+```
+$app->setDefaultResultHandler(new JsonResultHandler());
+```
+
+in the controller you can then just return the data:
+
+```php
+$app->get("/", function() {
+    return ["data"=>"someData"];
+}
+```
+
+
 ## Authentication & Authorization
 
 ## Role based Authentication
