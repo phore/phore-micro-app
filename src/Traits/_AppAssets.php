@@ -27,7 +27,7 @@ trait _AppAssets
         "png" => "image/png",
         "jpg" => "image/jpg",
         "gif" => "image/gif",
-        "svg" => "image/svg",
+        "svg" => "image/svg+xml",
         "woff" => "application/font-woff",
         "woff2" => "application/font-woff2",
         "ttf" => "application/font-ttf",
