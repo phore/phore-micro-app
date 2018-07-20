@@ -23,6 +23,7 @@ $app->router
     ->get("/",                                              // Define a Action for HTTP-GET-Requests to /
         function() use ($app) {                             
             $app->out("Hello World");                       // Hello World!
+            return true;                                    // Important: Return true if output was already sent.
         }
     );
     
