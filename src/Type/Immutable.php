@@ -21,7 +21,7 @@ class Immutable
 
     public function get(string $name, $default = null)
     {
-        if ( ! isset ($this->__immutableData[$name])) {
+        if ( empty ($this->__immutableData[$name])) {
             if (func_num_args() == 1)
                 throw new \InvalidArgumentException("Missing value '$name' in ". get_class($this));
             if ($default instanceof \Exception)
