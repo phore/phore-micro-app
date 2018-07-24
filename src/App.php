@@ -20,6 +20,7 @@ use Phore\MicroApp\Router\Router;
 use Phore\MicroApp\Traits\_AppAssets;
 use Phore\MicroApp\Traits\_AppEnv;
 use Phore\MicroApp\Traits\_AppErrorHandler;
+use Phore\MicroApp\Traits\_AppEvents;
 use Phore\MicroApp\Traits\_AppResponse;
 use Phore\MicroApp\Type\Request;
 
@@ -36,7 +37,7 @@ use Phore\MicroApp\Type\Request;
  */
 class App extends DiContainer
 {
-    use _AppEnv, _AppAssets, _AppErrorHandler, _AppResponse;
+    use _AppEnv, _AppAssets, _AppErrorHandler, _AppResponse, _AppEvents;
 
 
     public function __construct()
