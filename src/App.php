@@ -79,7 +79,7 @@ class App extends DiContainer
             });
             $this->assets[$assetRoute] = $assetSet;
         }
-        return $this->assets($assetRoute);
+        return $this->assets[$assetRoute];
     }
 
     public function __get ($name)
