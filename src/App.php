@@ -25,6 +25,7 @@ use Phore\MicroApp\Traits\_AppResponse;
 use Phore\MicroApp\Type\AssetSet;
 use Phore\MicroApp\Type\Mime;
 use Phore\MicroApp\Type\Request;
+use Phore\MicroApp\Type\RouteParams;
 
 /**
  * Class App
@@ -72,7 +73,10 @@ class App extends DiContainer
     {
         if ( ! isset ($this->assets[$assetRoute])) {
             $this->acl->addRule(aclRule()->route("{$assetRoute}/*")->methods(["GET", "HEADER"])->ALLOW());
-            $this->router->delegate("{$assetRoute}/::assetFile", $assetSet = new AssetSet($this));
+            $assetSet = $this->assets[$assetRoute] = new AssetSet($this);
+            $this->router->get("{$assetRoute}/::assetFile", function(RouteParams $routeParams) use ($assetSet) {
+                return $assetSet->__dispatch($routeParams);
+            });
             $this->assets[$assetRoute] = $assetSet;
         }
         return $this->assets($assetRoute);

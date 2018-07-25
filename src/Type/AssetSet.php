@@ -48,7 +48,7 @@ class AssetSet
     }
 
 
-    public function on_get(Request $request, RouteParams $params)
+    public function __dispatch(RouteParams $params)
     {
         $assetPath = $params["assetPath"];
         $ext = pathinfo($assetPath, PATHINFO_EXTENSION);
