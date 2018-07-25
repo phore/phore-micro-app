@@ -22,6 +22,8 @@ use Phore\MicroApp\Traits\_AppEnv;
 use Phore\MicroApp\Traits\_AppErrorHandler;
 use Phore\MicroApp\Traits\_AppEvents;
 use Phore\MicroApp\Traits\_AppResponse;
+use Phore\MicroApp\Type\AssetSet;
+use Phore\MicroApp\Type\Mime;
 use Phore\MicroApp\Type\Request;
 
 /**
@@ -33,11 +35,12 @@ use Phore\MicroApp\Type\Request;
  * @property-read Acl           $acl
  * @property-read AuthUser      $authUser
  * @property-read Router        $router
+ * @property-read Mime          $mime
  *
  */
 class App extends DiContainer
 {
-    use _AppEnv, _AppAssets, _AppErrorHandler, _AppResponse, _AppEvents;
+    use _AppEnv, _AppErrorHandler, _AppResponse, _AppEvents;
 
 
     public function __construct()
@@ -53,9 +56,7 @@ class App extends DiContainer
         $this->define("acl", new DiValue(new Acl($authManager, $this)));
         $this->define("router", new DiValue(new Router($this)));
         $this->define("authUser", new DiService(function () { return $this->authManager->getUser(); }));
-
-        // Allow Asset-Route
-        $this->acl->addRule(aclRule()->route("/asset/*")->methods(["GET", "HEADER"])->ALLOW());
+        $this->define("mime", new DiService(function() { return new Mime(); }));
     }
 
 
@@ -65,6 +66,17 @@ class App extends DiContainer
         return $this;
     }
 
+    private $assets = [];
+
+    public function assets(string $assetRoute = "/assets") : AssetSet
+    {
+        if ( ! isset ($this->assets[$assetRoute])) {
+            $this->acl->addRule(aclRule()->route("{$assetRoute}/*")->methods(["GET", "HEADER"])->ALLOW());
+            $this->router->delegate("{$assetRoute}/::assetFile", $assetSet = new AssetSet($this));
+            $this->assets[$assetRoute] = $assetSet;
+        }
+        return $this->assets($assetRoute);
+    }
 
     public function __get ($name)
     {

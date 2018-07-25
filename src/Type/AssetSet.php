@@ -2,38 +2,34 @@
 /**
  * Created by PhpStorm.
  * User: matthes
- * Date: 18.06.18
- * Time: 15:04
+ * Date: 25.07.18
+ * Time: 18:22
  */
 
-namespace Phore\MicroApp\Traits;
+namespace Phore\MicroApp\Type;
 
 
+use Phore\MicroApp\App;
 use Phore\MicroApp\Exception\HttpException;
-use Phore\MicroApp\Router\Router;
-use Phore\MicroApp\Type\Request;
-use Phore\MicroApp\Type\Route;
-use Phore\MicroApp\Type\RouteParams;
 
-trait _AppAssets
+class AssetSet
 {
+
+    /**
+     * @var App
+     */
+    private $app;
+
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+    }
 
     protected $assetSearchPath = [];
     protected $virtualAsset = [];
 
-    protected $mimeTab = [
-        "css" => "text/css",
-        "js"  => "text/javascript",
-        "png" => "image/png",
-        "jpg" => "image/jpg",
-        "gif" => "image/gif",
-        "svg" => "image/svg+xml",
-        "woff" => "application/font-woff",
-        "woff2" => "application/font-woff2",
-        "ttf" => "application/font-ttf",
-    ];
 
-    public function addAssetSearchPath(string $path)
+    public function addAssetSearchPath(string $path) : self
     {
         $this->assetSearchPath[] = $path;
         return $this;
@@ -41,7 +37,7 @@ trait _AppAssets
 
 
 
-    public function addVirtualAsset($name, $files)
+    public function addVirtualAsset($name, $files) : self
     {
         if ( ! isset ($this->virtualAsset[$name]))
             $this->virtualAsset[$name] = [];
@@ -52,19 +48,15 @@ trait _AppAssets
     }
 
 
-    protected function dispatchAssetRoute(Request $request)
+    public function on_get(Request $request, RouteParams $params)
     {
-        if ( ! Router::IsMatching("/asset/::assetPath", $request, $params))
-            return false;
-
-
         $assetPath = $params["assetPath"];
         $ext = pathinfo($assetPath, PATHINFO_EXTENSION);
-        if ( ! isset ($this->mimeTab[$ext]))
+        if ( ! isset ($this->m[$ext]))
             throw new \InvalidArgumentException("No mime type defined for file extension '$ext'");
 
         if (isset ($this->virtualAsset[$assetPath])) {
-            header("Content-Type: {$this->mimeTab[$ext]}");
+            header("Content-Type: {$this->app->mime->getContentTypeByExtension($ext)}");
             foreach ($this->virtualAsset[$assetPath] as $curFile) {
                 echo file_get_contents($curFile) . "\n";
             }
@@ -73,7 +65,7 @@ trait _AppAssets
 
         foreach ($this->assetSearchPath as $curPath) {
             if (file_exists($curPath . "/" . $assetPath)) {
-                header("Content-Type: {$this->mimeTab[$ext]}");
+                header("Content-Type: {$this->app->mime->getContentTypeByExtension($ext)}");
                 $fp = fopen($curPath . "/" . $assetPath, "r");
                 fpassthru($fp);
                 fclose($fp);
@@ -82,5 +74,4 @@ trait _AppAssets
         }
         throw new HttpException("Asset '$assetPath' not found.", 404);
     }
-
 }

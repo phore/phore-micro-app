@@ -106,16 +106,16 @@ Request specific parameters are:
 
 ## Assets *([Example](doc/assets/assets.php))*
 
-Assets are located below the `/asset/`-route. You can define one or
+Assets are located below the `/assets/`-route. You can define one or
 more directories, the asset-manager will try to find the asset.
 
-`/asset/*` will be allowed for all requests in ACL. So don't put
+`/assets/*` will be allowed for all requests in ACL. So don't put
 sensitive data here.
 
 - Allow all requests to `/asset/*` and link them to local assets:
   ```php
-  $app->addAssetSearchPath(__DIR__ . "/asset_data/");
-  $app->addAssetSearchPath(__DIR__ . "/alt_asset_data/");
+  $app->assets()->addAssetSearchPath(__DIR__ . "/asset_data/");
+  $app->assets()->addAssetSearchPath(__DIR__ . "/alt_asset_data/");
   ```
   Request to `/asset/css/some.css`: The asset-manager will try to
   find the file in `/asset_data/css/some.css`. If it does not exist there,
@@ -123,7 +123,7 @@ sensitive data here.
   
 - Virtual assets are generated on the fly.
   ```php
-  $app->addVirtualAsset("all.js", [__DIR__ . "/some/file.js", __DIR__ . "/some/other.js"]);
+  $app->assets()->addVirtualAsset("all.js", [__DIR__ . "/some/file.js", __DIR__ . "/some/other.js"]);
   ``` 
   The virtual asset is available in path `/asset/all.js`.
 
