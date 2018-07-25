@@ -50,10 +50,8 @@ class AssetSet
 
     public function __dispatch(RouteParams $params)
     {
-        $assetPath = $params["assetPath"];
+        $assetPath = $params->get("assetFile");
         $ext = pathinfo($assetPath, PATHINFO_EXTENSION);
-        if ( ! isset ($this->m[$ext]))
-            throw new \InvalidArgumentException("No mime type defined for file extension '$ext'");
 
         if (isset ($this->virtualAsset[$assetPath])) {
             header("Content-Type: {$this->app->mime->getContentTypeByExtension($ext)}");
