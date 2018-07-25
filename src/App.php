@@ -103,7 +103,6 @@ class App extends DiContainer
         $this->acl->validate($request);
 
         try {
-            $this->dispatchAssetRoute($request);
             $ret = $this->router->__dispatchRoute($request);
             if ($ret === true)
                 return true;
