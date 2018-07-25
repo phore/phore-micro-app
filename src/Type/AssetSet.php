@@ -45,6 +45,7 @@ class AssetSet
             $files = [$files];
         foreach ($files as $file)
             $this->virtualAsset[$name][] = $file;
+        return $this;
     }
 
 
