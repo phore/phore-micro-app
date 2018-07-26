@@ -9,10 +9,22 @@
 namespace Phore\MicroApp\Handler;
 
 
+use http\Exception\InvalidArgumentException;
 use Phore\MicroApp\Exception\HttpException;
 
 class JsonExceptionHandler
 {
+
+    /**
+     * @var callable[]
+     */
+    private $filter = [];
+
+    public function addFilter(callable $filter) : self
+    {
+        $this->filter[] = $filter;
+        return $this;
+    }
 
 
     public function __invoke(\Exception $e)
@@ -32,6 +44,11 @@ class JsonExceptionHandler
             "file" => $e->getFile(). "({$e->getLine()})",
             "trace" => explode("\n", $e->getTraceAsString())
         ];
+        foreach ($this->filter as $curFilter) {
+            $data = $curFilter($data);
+            if ($data === null)
+                throw new InvalidArgumentException("A filter must return something.");
+        }
         echo json_encode($data);
         exit;
     }
