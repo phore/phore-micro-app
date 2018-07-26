@@ -174,6 +174,8 @@ class Mime
         'xwd' => 'image/x-xwindowdump', 'xyz' => 'chemical/x-pdb', 'z' => 'application/x-compress', 'z' => 'application/x-compressed',
         'zip' => 'application/x-compressed', 'zip' => 'application/x-zip-compressed', 'zip' => 'application/zip', 'zip' => 'multipart/x-zip',
         'zoo' => 'application/octet-stream', 'zsh' => 'text/x-script.zsh',
+
+        'svg'=>'image/svg+xml', "woff" => "application/x-font-woff",
     ];
 
     private $defaultType = "application/octet-stream";
