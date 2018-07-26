@@ -109,8 +109,8 @@ class Router
         foreach ($this->routes as $curRoute) {
             $routeParams = [];
             $routeMatch = "*";
-            if (isset ($curRoute["method"])) {
-                if ( ! in_array($request->requestMethod, $curRoute["method"])) {
+            if (isset ($curRoute["methods"])) {
+                if ( ! in_array($request->requestMethod, $curRoute["methods"])) {
                     continue;
                 }
             }
