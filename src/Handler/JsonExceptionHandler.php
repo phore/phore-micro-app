@@ -29,6 +29,11 @@ class JsonExceptionHandler
 
     public function __invoke(\Exception $e)
     {
+        if (headers_sent($file, $line)) {
+            throw new \InvalidArgumentException(
+                "Headers were already sent by $file Line $line"
+            );
+        }
         if ($e instanceof HttpException) {
             header("HTTP/1.1 {$e->getCode()} {$e->getMessage()}");
         } else {

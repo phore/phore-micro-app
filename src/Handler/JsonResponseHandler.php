@@ -25,6 +25,11 @@ class JsonResponseHandler implements ResponseHandler
     
     public function handle($data): void
     {
+        if (headers_sent($file, $line)) {
+            throw new \InvalidArgumentException(
+                "Headers were already sent by $file Line $line"
+            );
+        }
         header("Content-Type: application/json");
         foreach ($this->filter as $curFilter) {
             $data = $curFilter($data);
