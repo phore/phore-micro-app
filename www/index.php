@@ -6,10 +6,7 @@
  * Time: 15:22
  */
 namespace Demo;
-use HtmlTheme\Pack\CoreUI\CoreUI;
-use HtmlTheme\Pack\CoreUI\CoreUi_Config_PageWithHeader;
-use HtmlTheme\Pack\CoreUI\CoreUi_PageWithHeader;
-use HtmlTheme\Pack\CoreUI\CoreUiModule;
+
 use Phore\MicroApp\App;
 use Phore\MicroApp\AppModule;
 use Phore\MicroApp\Auth\AclRule;
@@ -21,6 +18,9 @@ use Phore\MicroApp\Type\QueryParams;
 use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
+use Phore\Theme\CoreUI\CoreUi_Config_PageWithHeader;
+use Phore\Theme\CoreUI\CoreUi_PageWithHeader;
+use Phore\Theme\CoreUI\CoreUiModule;
 
 require __DIR__ . "/../vendor/autoload.php";
 
@@ -31,8 +31,12 @@ $app->setOnExceptionHandler(new JsonExceptionHandler());
 
 // Set Authentication
 $app->authManager->setAuthMech(new HttpBasicAuthMech());
-$app->authManager->setUserProvider(new BasicUserProvider(["admin:admin:@admin:{}"], true));
-$app->acl->addRule(\aclRule()->route("/*")->ALLOW());
+$app->authManager->setUserProvider($bup = new BasicUserProvider(true));
+$bup->addUserYamlFile(__DIR__ . "/../user-passwd.yml");
+
+//$bup->addUser("admin", "admin", "@admin", ["some"=>"Metadata"]);
+
+$app->acl->addRule(\aclRule()->route("/*")->role("@admin")->ALLOW());
 
 // Add the CoreUI Theme Module (assets)
 $app->addModule(new CoreUiModule());

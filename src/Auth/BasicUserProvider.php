@@ -8,45 +8,66 @@
 
 namespace Phore\MicroApp\Auth;
 
-
 class BasicUserProvider implements UserProvider
 {
 
-    private $passwd;
+    private $users = [];
     private $allowPlainTextPasswd;
 
-    public function __construct(array $passwd = [], bool $allowPlainTextPasswd=false)
+    public function __construct(bool $allowPlainTextPasswd=false)
     {
-        $this->passwd = $passwd;
         $this->allowPlainTextPasswd = $allowPlainTextPasswd;
     }
 
 
 
+    public function addUser (string $userName, string $passwordHash, string $role, array $metadata) : self
+    {
+        if (isset ($this->users[$userName]))
+            throw new \InvalidArgumentException("Duplicate password entry of user '$userName'");
+        $this->users[$userName] = [
+            "hash" => $passwordHash,
+            "role" => $role,
+            "meta" => $metadata
+        ];
+        return $this;
+    }
+
+    public function addUserYamlFile (string $userFile) : self
+    {
+        $users = yaml_parse_file($userFile);
+        if ($users === false)
+            throw new \InvalidArgumentException("Cannot parse yaml user-file: '$userFile'.");
+        foreach ($users as $index => $userData) {
+            if ( ! isset ($userData["user"]) || ! isset($userData["hash"]) || !isset($userData["role"]) || !isset($userData["meta"]))
+                throw new \InvalidArgumentException("Required property missing: user | hash | role | meta in index $index of user-file: '$userFile'");
+            try {
+                $this->addUser($userData["user"], $userData["hash"], $userData["role"], ["meta"]);
+            } catch (\Exception $e) {
+                throw new \InvalidArgumentException("Cannot add user '{$userData["user"]}': {$e->getMessage()} (from '$userFile')");
+            }
+        }
+        return $this;
+    }
 
 
 
     public function validateUser(string $userName, string $userPasswd, array $roleMap)
     {
-        foreach ($this->passwd as $curLine) {
-            $data = explode(":", $curLine);
-            if (!count($data) == 3)
-                continue;
-            [$ctoken, $cpasswd, $crole, $meta] = $data;
+        if ( ! isset ($this->users[$userName]))
+            return null;
+        $user = $this->users[$userName];
 
-            $meta = json_decode($meta);
-
-            if ($userName == $ctoken && (password_verify($userPasswd, $cpasswd) || ($this->allowPlainTextPasswd && $cpasswd === $userPasswd))) {
-                if ( ! isset ($roleMap[$crole]))
-                    throw new \InvalidArgumentException("User role '$crole' is not defined in roleMap.");
-                return new AuthUser([
-                    "userName" => $userName,
-                    "role" => $crole,
-                    "roleMap" => $roleMap,
-                    "roleId" => $roleMap[$crole],
-                    "meta" => $meta
-                ]);
-            }
+        if (password_verify($userPasswd, $user["hash"]) || ($this->allowPlainTextPasswd && $user["hash"] === $userPasswd)) {
+            if (!isset ($roleMap[$user["role"]]))
+                throw new \InvalidArgumentException("User role '{$user["role"]}' is not defined in roleMap.");
+            return new AuthUser([
+                "userName" => $userName,
+                "role" => $user["role"],
+                "roleMap" => $roleMap,
+                "roleId" => $roleMap[$user["role"]],
+                "meta" => $user["meta"]
+            ]);
         }
         return null;
     }
@@ -58,28 +79,20 @@ class BasicUserProvider implements UserProvider
      * @return AuthUser
      * @throws InvalidUserException
      */
-    public function getUserById(string $userId, array $roleMap) : AuthUser
+    public function getUserById(string $userName, array $roleMap) : AuthUser
     {
-        foreach ($this->passwd as $curLine) {
-            $data = explode(":", $curLine);
-            if (!count($data) == 3)
-                continue;
-            [$ctoken, $cpasswd, $crole, $meta] = $data;
+        if ( ! isset ($this->users[$userName]))
+            throw new InvalidUserException("Invalid userId: '$userName'");
+        $user = $this->users[$userName];
 
-            $meta = json_decode($meta);
-
-            if ($userId == $ctoken) {
-                if ( ! isset ($roleMap[$crole]))
-                    throw new \InvalidArgumentException("User role '$crole' is not defined in roleMap.");
-                return new AuthUser([
-                    "userName" => $userId,
-                    "role" => $crole,
-                    "roleMap" => $roleMap,
-                    "roleId" => $roleMap[$crole],
-                    "meta" => $meta
-                ]);
-            }
-        }
-        throw new InvalidUserException("Invalid userId: '$userId'");
+        if (!isset ($roleMap[$user["role"]]))
+            throw new \InvalidArgumentException("User role '{$user["role"]}' is not defined in roleMap.");
+        return new AuthUser([
+            "userName" => $userName,
+            "role" => $user["role"],
+            "roleMap" => $roleMap,
+            "roleId" => $roleMap[$user["role"]],
+            "meta" => $user["meta"]
+        ]);
     }
 }

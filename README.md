@@ -176,6 +176,17 @@ $app->get("/", function() {
 
 ## Authentication & Authorization
 
+- Use `BasicUserProvider` to load users from a yaml-file (see [user-passwd.yml](doc/acl/user-passwd.yml))
+    ```php
+    $app->authManager->setUserProvider($basicUserProvider = new BasicUserProvider());
+    $basicUserProvider->addUserYamlFile(__DIR__ . "/../user-passwd.yml");
+    ```
+- Create secure and salted SHA-512 passwords:
+  ```bash
+  mkpasswd -m sha-512
+  ```
+
+
 ## Role based Authentication
 
 Predefined Group hierachy:

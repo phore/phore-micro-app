@@ -17,17 +17,19 @@ $app = new App();
 // The most easiest way to authenticate is using HTTP Basic Authentication
 $app->authManager->setAuthMech(new HttpBasicAuthMech());
 
-// Define which users are available
+// Set the user-provider to check logins against
 $app->authManager->setUserProvider(
-    new BasicUserProvider(
-        [
-            "admin:passwd:@admin:{name:'Hello Administrator'}",
-            "admin2:passwd:@admin:{name:'Hello Nr2'}",
-            "elfi:secret:@user:{name: 'Elfi'}"
-        ],
-        true    // <- Allow Plain-Text passwords - ALWAYS SET THIS TO false IN PRODUCTION ENVIRONMENTS
+    $basicUserProvider = new BasicUserProvider(
+        false    // <- Set to true to allow plain-text passwords - ALWAYS SET THIS TO false IN PRODUCTION ENVIRONMENTS
     )
 );
+// Define Users in source-code (don't do that unless you know what you are doing):
+// $basicUserProvider->addUser("admin", "insecure-admin-passwd", "@admin", ["some" => "metadata"]);
+
+// Load users from userfile (see user-passwd.yml)
+$basicUserProvider->addUserYamlFile(__DIR__ . "/../user-passwd.yml");
+
+
 
 
 // Allow only Authenticated Users to Access /admin/ Routes

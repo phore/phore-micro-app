@@ -2,6 +2,7 @@
   "name": "phore/micro-app",
   "type": "library",
   "license": "MIT",
+  "description": "Micro framework for rest api webservices",
   "authors": [
     {
       "name": "Matthias Leuffen",
@@ -18,11 +19,14 @@
   },
   "require": {
     "php" : ">7.1",
-    "phore/di-base": "^2.1"
+    "phore/di-base": "^2.1",
+    "ext-json": "*",
+    "ext-yaml": "*"
   },
   "require-dev": {
-    "continue/theme": "dev-master"
+    "phore/theme-coreui": "dev-master"
   },
   "suggest": {
-  }
+  },
+  "minimum-stability": "dev"
 }

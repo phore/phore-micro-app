@@ -16,6 +16,7 @@ use Phore\Di\Container\Producer\DiValue;
 use Phore\MicroApp\Auth\Acl;
 use Phore\MicroApp\Auth\AuthManager;
 use Phore\MicroApp\Auth\AuthUser;
+use Phore\MicroApp\Auth\InvalidUserException;
 use Phore\MicroApp\Router\Router;
 use Phore\MicroApp\Traits\_AppAssets;
 use Phore\MicroApp\Traits\_AppEnv;
@@ -56,7 +57,12 @@ class App extends DiContainer
         $this->define("authManager", new DiValue($authManager = new AuthManager()));
         $this->define("acl", new DiValue(new Acl($authManager, $this)));
         $this->define("router", new DiValue(new Router($this)));
-        $this->define("authUser", new DiService(function () { return $this->authManager->getUser(); }));
+        $this->define("authUser", new DiService(function () {
+            $user = $this->authManager->getUser();
+            if ($user === null)
+                throw new InvalidUserException("Application requests 'authUser', but no user is signed in. (acl rule missing?)");
+            return $user;
+        }));
         $this->define("mime", new DiService(function() { return new Mime(); }));
     }
 

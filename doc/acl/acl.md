@@ -3,7 +3,9 @@
 [See working example](acl.php);
 
 
-## Possible selectors
+## Acl usage
+
+### Possible selectors
 
 | Selector | Description |
 |----------|----------------------|
@@ -11,9 +13,6 @@
 | `role("@roleName")`             | A user must be authenticated and have minimum role |
 | `networks("10.0.0.0/8 127.0.0.1/24")` | Match Requesting IP |
 | `methods(["GET", "POST"])`            | Match a request type |
-
-
-
 
 
 
@@ -38,5 +37,34 @@ $app->acl->addRule(aclRule()->route("/api/admin/*")->role("@admin")->network("10
 ```
 
 ***ALLOW*** if route matches `/api/admin/*` ***AND*** role matches `@admin` ***AND** network matches `10.0.0.0/8`
+
+
+## Authentication
+
+### Creating SHA-512 passwords
+
+To create a salted secure hashed password use (inside the container):
+
+```
+mkpasswd -m sha-512
+```
+
+Copy the output of it into the "hash"-section of your password-file.
+
+
+### Yaml password file format
+
+Create a file `user-passwd.yml` (see [demo](user-passwd.yml))
+
+```
+- user: userId1
+  hash: $6$Qk0et0h.LQX/NkU5$bqng9ejHYzpNR9xZ7Gf89R1XvNU1Ekf/qCD6P6cTiPmxGd5GoKGjAdXS3falIslX73svTMcQBu25jk0BhdabP.
+  role: @admin
+  meta:
+    some: metadata
+    other: metadata
+    
+...other users...
+```
 
 
