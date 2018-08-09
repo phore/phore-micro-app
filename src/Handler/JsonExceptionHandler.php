@@ -31,7 +31,7 @@ class JsonExceptionHandler
     {
         if (headers_sent($file, $line)) {
             throw new \InvalidArgumentException(
-                "Headers were already sent by $file Line $line"
+                "Headers were already sent by $file Line $line", 0, $e
             );
         }
         if ($e instanceof HttpException) {
