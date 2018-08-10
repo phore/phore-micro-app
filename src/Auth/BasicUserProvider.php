@@ -42,7 +42,7 @@ class BasicUserProvider implements UserProvider
             if ( ! isset ($userData["user"]) || ! isset($userData["hash"]) || !isset($userData["role"]) || !isset($userData["meta"]))
                 throw new \InvalidArgumentException("Required property missing: user | hash | role | meta in index $index of user-file: '$userFile'");
             try {
-                $this->addUser($userData["user"], $userData["hash"], $userData["role"], ["meta"]);
+                $this->addUser($userData["user"], $userData["hash"], $userData["role"], $userData["meta"]);
             } catch (\Exception $e) {
                 throw new \InvalidArgumentException("Cannot add user '{$userData["user"]}': {$e->getMessage()} (from '$userFile')");
             }
