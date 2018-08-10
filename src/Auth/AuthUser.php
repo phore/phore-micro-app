@@ -24,6 +24,7 @@ use Phore\MicroApp\Type\Immutable;
 class AuthUser extends Immutable
 {
 
+    public $appMeta = [];
 
     public function hasMinRole(string $role)
     {

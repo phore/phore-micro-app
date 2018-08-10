@@ -61,6 +61,7 @@ class App extends DiContainer
             $user = $this->authManager->getUser();
             if ($user === null)
                 throw new InvalidUserException("Application requests 'authUser', but no user is signed in. (acl rule missing?)");
+            $this->triggerEvent("AUTH_USER_REQUESTED", ["authUser"=>$user]);
             return $user;
         }));
         $this->define("mime", new DiService(function() { return new Mime(); }));
