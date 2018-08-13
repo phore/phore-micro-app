@@ -13,15 +13,17 @@ use Throwable;
 
 class HttpException extends \Exception
 {
-
-    public $httpStatusCode = 500;
+    
+    public $responseBody = null;
 
     public function __construct(
         string $message = "",
-        int $code = 0,
+        int $code = 500,
+        $responseBody = null,
         Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
+        $this->responseBody = $responseBody;
     }
 
 }
