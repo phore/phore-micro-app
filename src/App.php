@@ -80,7 +80,7 @@ class App extends DiContainer
     {
         if ( ! isset ($this->assets[$assetRoute])) {
             $this->acl->addRule(aclRule()->route("{$assetRoute}/*")->methods(["GET", "HEADER"])->ALLOW());
-            $assetSet = $this->assets[$assetRoute] = new AssetSet($this);
+            $assetSet = new AssetSet($this);
             $this->router->get("{$assetRoute}/::assetFile", function(RouteParams $routeParams) use ($assetSet) {
                 return $assetSet->__dispatch($routeParams);
             });

@@ -53,8 +53,9 @@ class AssetSet
     {
         $assetPath = $params->get("assetFile");
         $ext = pathinfo($assetPath, PATHINFO_EXTENSION);
-
+       
         if (isset ($this->virtualAsset[$assetPath])) {
+            echo "found: $assetPath";
             header("Content-Type: {$this->app->mime->getContentTypeByExtension($ext)}");
             foreach ($this->virtualAsset[$assetPath] as $curFile) {
                 echo file_get_contents($curFile) . "\n";
