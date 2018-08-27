@@ -43,25 +43,26 @@ class JsonExceptionHandler
         header("Content-Type: application/json");
         
         
-        
-        $data = [
-            "success" => false,
-            "msg" => $e->getMessage(),
-            "code" => $e->getCode(),
-            "class" => get_class($e),
-            "file" => $e->getFile(). "({$e->getLine()})",
-            "trace" => explode("\n", $e->getTraceAsString())
+        $error = [
+            "error" => [
+                "msg" => $e->getMessage(),
+                "code" => $e->getCode(),
+                "class" => get_class($e),
+                "file" => $e->getFile(). "({$e->getLine()})",
+                "trace" => explode("\n", $e->getTraceAsString()),
+                "errors" => []
+            ]
         ];
         if ($responseBody !== null)
             $data = $responseBody;
         
         
         foreach ($this->filter as $curFilter) {
-            $data = $curFilter($data);
-            if ($data === null)
+            $error = $curFilter($error);
+            if ($error === null)
                 throw new \InvalidArgumentException("A filter must return something.");
         }
-        echo json_encode($data);
+        echo json_encode($error);
         exit;
     }
 
