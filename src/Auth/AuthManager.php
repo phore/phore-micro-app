@@ -108,6 +108,8 @@ class AuthManager
 
     public function requestAuth(string $message)
     {
+        if ($this->authMech === null)
+            throw new \InvalidArgumentException("No auth-mech registered / enabled.");
         $this->authMech->requestAuth($message);
     }
 
