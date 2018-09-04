@@ -54,6 +54,32 @@ class Request extends Immutable
         return $_SERVER["REMOTE_ADDR"]; // Return the private Remote-ADDR
     }
 
+    /**
+     * Return the entire request's POST/GET Body
+     *
+     * @return string
+     */
+    public function getBody() : string
+    {
+        if ($this->requestMethod !== "POST" && $this->requestMethod !== "PUT")
+            throw new \InvalidArgumentException("Body is only availabe on POST/PUT requests.");
+        return file_get_contents("php://input");
+    }
+
+    /**
+     * json-decode the body
+     *
+     * @return array
+     */
+    public function getJsonBody() : array
+    {
+        $data = json_decode($bodyRaw = $this->getBody(), true);
+        if ($data === null)
+            throw new \InvalidArgumentException("Cannot json-decode body: '$bodyRaw'");
+        return $data;
+    }
+
+
     public static function Build()
     {
 
