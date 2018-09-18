@@ -31,6 +31,23 @@ class Immutable
         return $this->__immutableData[$name];
     }
 
+    /**
+     * Pluck data
+     * 
+     * <example>
+     * $data = $this->pluck(["meta", "abc"]);
+     * </example>
+     * 
+     * @param $key
+     * @param null $default
+     * @return null
+     * @throws \Exception
+     */
+    public function pluck ($key, $default=null)
+    {
+        return phore_pluck($key, $this->__immutableData, $default);
+    }
+
 
     public function has(string $name) : bool
     {
