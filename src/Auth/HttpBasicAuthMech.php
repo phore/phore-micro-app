@@ -17,14 +17,14 @@ class HttpBasicAuthMech implements AuthMech
         return isset($_SERVER["PHP_AUTH_USER"]);
     }
 
-    public function getAuthToken(): string
+    public function getAuthToken() : ?string
     {
-        return $_SERVER["PHP_AUTH_USER"];
+        return isset ($_SERVER["PHP_AUTH_USER"]) ? $_SERVER["PHP_AUTH_USER"] : null;
     }
 
-    public function getAuthPasswd(): string
+    public function getAuthPasswd() : ?string
     {
-        return $_SERVER["PHP_AUTH_PW"];
+        return isset ($_SERVER["PHP_AUTH_PW"]) ? $_SERVER["PHP_AUTH_PW"] : null;
     }
 
     public function requestAuth(string $message)

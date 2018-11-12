@@ -17,12 +17,12 @@ class HttpFormAuthMech implements AuthMech, SessionBasedAuthMech
         return false;
     }
 
-    public function getAuthToken(): string
+    public function getAuthToken(): ?string
     {
         return $_POST["username"];
     }
 
-    public function getAuthPasswd(): string
+    public function getAuthPasswd(): ?string
     {
         return $_POST["password"];
     }

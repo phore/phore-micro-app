@@ -13,7 +13,7 @@ interface AuthMech
 {
 
     public function hasAuthData() : bool;
-    public function getAuthToken() : string;
-    public function getAuthPasswd() : string;
+    public function getAuthToken() : ?string;
+    public function getAuthPasswd() : ?string;
     public function requestAuth(string $message);
 }
