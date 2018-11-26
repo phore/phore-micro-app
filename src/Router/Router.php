@@ -10,6 +10,7 @@ namespace Phore\MicroApp\Router;
 
 
 use http\Exception\InvalidArgumentException;
+use Phore\Di\Container\Producer\DiService;
 use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
 use Phore\MicroApp\Type\Request;
@@ -123,6 +124,7 @@ class Router
                 if ( ! $this::IsMatching($curRoute["route"], $request, $routeParams)) {
                     continue;
                 }
+                $this->app->add("routeParams", new DiService(function() use ($routeParams) {return new RouteParams($routeParams); }));
                 $routeMatch = $curRoute["route"];
             }
 

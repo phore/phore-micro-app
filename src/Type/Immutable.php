@@ -31,6 +31,12 @@ class Immutable
         return $this->__immutableData[$name];
     }
 
+    
+    public function list() : array 
+    {
+        return array_keys($this->__immutableData);
+    }
+    
     /**
      * Pluck data
      * 

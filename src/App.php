@@ -54,6 +54,7 @@ class App extends DiContainer
         $this->define(get_class($this), new DiValue($this));
         $this->define("app", new DiValue($this));
         $this->define("request", new DiService(function () { return Request::Build(); }));
+        $this->define("routeParams", new DiService(function() { throw new \InvalidArgumentException("di-service: routeParams not available in this stage."); }));
         $this->define("authManager", new DiValue($authManager = new AuthManager()));
         $this->define("acl", new DiValue(new Acl($authManager, $this)));
         $this->define("router", new DiValue(new Router($this)));
