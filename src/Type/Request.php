@@ -18,7 +18,7 @@ use Phore\MicroApp\Helper\IPSet;
  *
  * @property-read string $requestMethod     POST/GET/PUT/DELETE
  * @property-read string $requestPath       The Path the route is calculated on
- * @property-read string $requestIp         The REMOTE_ADDR or X_FORWARED_FOR
+ * @property-read string $remoteAddr         The REMOTE_ADDR or X_FORWARED_FOR
  * @property-read QueryParams $GET
  * @property-read QueryParams $POST
  */
