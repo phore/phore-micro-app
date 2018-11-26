@@ -97,6 +97,11 @@ class Router
             "GET" => $request->GET
 
         ];
+        foreach ($routeParams as $key => $val) {
+            if (isset ($callParams[$key]))
+                throw new \InvalidArgumentException("Cannot add route-param '$key': Reserved keyword!");
+            $callParams[$key] = $val;
+        }
         if ($request->has("POST"))
             $callParams["POST"] = $request->POST;
         return $callParams;
