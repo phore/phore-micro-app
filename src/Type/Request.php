@@ -73,10 +73,11 @@ class Request extends Immutable
      */
     public function getJsonBody() : array
     {
-        $data = json_decode($bodyRaw = $this->getBody(), true);
-        if ($data === null)
-            throw new \InvalidArgumentException("Cannot json-decode body: '$bodyRaw'");
-        return $data;
+        try {
+            return phore_json_decode($bodyRaw = $this->getBody());
+        } catch (\InvalidArgumentException $e) {
+            throw new \InvalidArgumentException("Cannot json-decode body: '$bodyRaw'", 0, $e);
+        }
     }
 
 
