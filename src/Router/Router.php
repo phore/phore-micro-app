@@ -91,11 +91,11 @@ class Router
             "request" => $request,
             "route" =>
                 new Route([
-                    "routeParams" => $routeParams = new RouteParams($routeParams),
+                    "routeParams" => $routeParamsObj = new RouteParams($routeParams),
                     "route" => $route,
                     "request" => $request
                 ]),
-            "routeParams" => $routeParams,
+            "routeParams" => $routeParamsObj,
             "GET" => $request->GET
 
         ];

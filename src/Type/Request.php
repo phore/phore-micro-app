@@ -71,7 +71,7 @@ class Request extends Immutable
      *
      * @return array
      */
-    public function getJsonBody() : array
+    public function getJsonBody($json_options=null) : array
     {
         try {
             return phore_json_decode($bodyRaw = $this->getBody());
