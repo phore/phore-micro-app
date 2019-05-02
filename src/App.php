@@ -82,7 +82,12 @@ class App extends DiContainer
         if ( ! isset ($this->assets[$assetRoute])) {
             $this->acl->addRule(aclRule()->route("{$assetRoute}/*")->methods(["GET", "HEADER"])->ALLOW());
             $assetSet = new AssetSet($this);
-            $this->router->get("{$assetRoute}/::assetFile", function(RouteParams $routeParams) use ($assetSet) {
+            $this->router->onGet("{$assetRoute}/::assetFile", function(RouteParams $routeParams) use ($assetSet) {
+                $assetFile = $routeParams->get("assetFile");
+                if (strpos($assetFile, "..") !== false || strpos($assetFile, "~") !== false) {
+                    throw new \InvalidArgumentException("Bogus characters in assetFile.");
+                }
+
                 return $assetSet->__dispatch($routeParams);
             });
             $this->assets[$assetRoute] = $assetSet;

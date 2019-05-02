@@ -6,6 +6,7 @@ use Phore\MicroApp\Handler\JsonExceptionHandler;
 use Phore\MicroApp\Handler\JsonResponseHandler;
 use Phore\MicroApp\Type\Body;
 use Phore\MicroApp\Type\Params;
+use Phore\MicroApp\Type\Request;
 
 require __DIR__ . "/../../vendor/autoload.php";
 
@@ -15,6 +16,9 @@ $app = new App();
 $app->setResponseHandler(new JsonResponseHandler());
 $app->setOnExceptionHandler(new JsonExceptionHandler());
 $app->acl->addRule(aclRule("*")->ALLOW());
+
+$app->assets("/test/assets")->addAssetSearchPath(__DIR__ . "/_assets_dir");
+
 
 $app->router->onGet("/test/:param1/:param2?", function (string $param1, Params $params, string $param2=null) {
      $ret = [
