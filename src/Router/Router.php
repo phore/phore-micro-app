@@ -11,6 +11,7 @@ namespace Phore\MicroApp\Router;
 
 use http\Exception\InvalidArgumentException;
 use Phore\Di\Container\Producer\DiService;
+use Phore\Di\Container\Producer\DiValue;
 use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
 use Phore\MicroApp\Type\Body;
@@ -132,18 +133,20 @@ class Router
     protected function buildCallParams(Request $request, array $routeParams, string $route) : array
     {
         $callParams = [
-            "app" => $this->app,
-            "request" => $request,
+            "app" => new DiValue($this->app),
+            "request" => new DiValue($request),
             "route" =>
-                new Route([
-                    "routeParams" => $routeParamsObj = new RouteParams($routeParams),
-                    "route" => $route,
-                    "request" => $request
-                ]),
-            "routeParams" => $routeParamsObj,
-            "GET" => $request->GET,
-            "body" => new Body($request),
-            "params" => $request->GET
+                new DiValue(
+                    new Route([
+                        "routeParams" => $routeParamsObj = new RouteParams($routeParams),
+                        "route" => $route,
+                        "request" => $request
+                    ])
+                ),
+            "routeParams" => new DiValue($routeParamsObj),
+            "GET" => new DiValue($request->GET),
+            "body" => new DiValue(new Body($request)),
+            "params" => new DiValue($request->GET)
         ];
 
         foreach ($routeParams as $key => $val) {
