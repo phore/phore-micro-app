@@ -28,6 +28,13 @@ class AssetSet
     protected $assetSearchPath = [];
     protected $virtualAsset = [];
 
+    protected $allowedExtensions = [
+        "txt", "html",
+        "png", "ico", "jpg", "jpeg", "gif", "svg",
+        "js", "css",
+        "ttf", "woff", "woff2"
+    ];
+
 
     public function addAssetSearchPath(string $path) : self
     {
@@ -35,6 +42,12 @@ class AssetSet
         return $this;
     }
 
+
+    public function addAllowedExtension(string $extension) : self
+    {
+        $this->allowedExtensions[] = $extension;
+        return $this;
+    }
 
 
     public function addVirtualAsset($name, $files) : self
@@ -53,7 +66,11 @@ class AssetSet
     {
         $assetPath = $params->get("assetFile");
         $ext = pathinfo($assetPath, PATHINFO_EXTENSION);
-       
+
+        if ( ! in_array(strtolower($ext), $this->allowedExtensions)) {
+            throw new \InvalidArgumentException("Asset extension '$ext' is not allowed. Use App::assets()::addAllowedExtension('$ext') to allow.");
+        }
+
         if (isset ($this->virtualAsset[$assetPath])) {
             header("Content-Type: {$this->app->mime->getContentTypeByExtension($ext)}");
             foreach ($this->virtualAsset[$assetPath] as $curFile) {

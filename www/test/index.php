@@ -18,7 +18,7 @@ $app->setOnExceptionHandler(new JsonExceptionHandler());
 $app->acl->addRule(aclRule("*")->ALLOW());
 
 $app->assets("/test/assets")->addAssetSearchPath(__DIR__ . "/_assets_dir");
-
+$app->assets("/test/assets")->addVirtualAsset("virtual.txt", __DIR__ . "/_assets_dir/file.txt");
 
 $app->router->onGet("/test/:param1/:param2?", function (string $param1, Params $params, string $param2=null) {
      $ret = [
