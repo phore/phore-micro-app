@@ -19,7 +19,7 @@
   },
   "require": {
     "php" : ">7.1",
-    "phore/di-base": "^2.1",
+    "phore/di-base": "2.1.3",
     "phore/core": "dev-master",
     "ext-json": "*",
     "ext-yaml": "*"
