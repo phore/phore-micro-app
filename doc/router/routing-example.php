@@ -19,6 +19,7 @@ $app->router->onGet("/load/:name", function (string $name, Params $params) {
     assert ($name === "someName");
     assert ( $params->get("id") === "1234" );
     assert ( $params->get("name") === "xyz");
+    return true;
 });
 
 // HTTP-POST Request: http://localhost/load/someName?id=1234&name=xyz with post form data
@@ -26,7 +27,7 @@ $app->router->onPost("/load/:name", function (string $name, Params $params, Body
     assert ($name === "someName");
     assert ($body->parseJson()  === "post data");
     assert ($body->getContents() === ["json post  data"]);
-
+    return true;
 });
 
 

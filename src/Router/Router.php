@@ -132,6 +132,7 @@ class Router
     protected function buildCallParams(Request $request, array $routeParams, string $route) : array
     {
         $callParams = [
+            "app" => $this->app,
             "request" => $request,
             "route" =>
                 new Route([
@@ -144,6 +145,7 @@ class Router
             "body" => new Body($request),
             "params" => $request->GET
         ];
+
         foreach ($routeParams as $key => $val) {
             if (isset ($callParams[$key]))
                 throw new \InvalidArgumentException("Cannot add route-param '$key': Reserved keyword!");
@@ -151,6 +153,7 @@ class Router
         }
         if ($request->has("POST"))
             $callParams["POST"] = $request->POST;
+        $callParams["__call_params"] = $callParams;
         return $callParams;
     }
 

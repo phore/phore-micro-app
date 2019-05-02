@@ -20,7 +20,7 @@ $app = new App();
 $app->acl->addRule(aclRule()->ALLOW());                     // Allow all requests
 
 $app->router
-    ->get("/",                                              // Define a Action for HTTP-GET-Requests to /
+    ->onGet("/",                                              // Define a Action for HTTP-GET-Requests to /
         function() use ($app) {                             
             $app->out("Hello World");                       // Hello World!
             return true;                                    // Important: Return true if output was already sent.
@@ -70,7 +70,7 @@ Define routes (Path) and connect them to controller functions:
 
 - Execute the function if the browser hits `http://domain.xy/hello/world`:
   ```php
-  $app->router->get("/hello/world", function() {
+  $app->router->onGet("/hello/world", function() {
       echo "Hello World";
       return true; 
   });
@@ -78,7 +78,7 @@ Define routes (Path) and connect them to controller functions:
   
 - Define Parameters (Prefix `:`) and optional parameters (`?`) in Routes:
   ```php
-  $app->router->get("/api/create/:userId/:userName?", function(RouteParams $routeParams) {
+  $app->router->onGet("/api/create/:userId/:userName?", function(RouteParams $routeParams) {
       echo "Hello {$routeParams->get("userId")} - {$routeParams->get("userName", 'Default Username')}";
       return true;
   });
