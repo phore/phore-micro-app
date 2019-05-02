@@ -99,6 +99,7 @@ Request specific parameters are:
 |----------------|------------------|-------------------------------|
 | `$request`     | `Request`        | The full request object       |
 | `$route`       | `Route`          | The current route object      |
+| `$params`      | `Params`         | Container with QueryParameters|
 | `$routeParams` | `RouteParams`    | Container with parameters     |
 | `$GET`         | `QueryParams`    | Query parameters              |
 | `$POST`        | `QueryParams`    | Parameters send by HTTP-POST  |

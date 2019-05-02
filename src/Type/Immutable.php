@@ -31,7 +31,13 @@ class Immutable
         return $this->__immutableData[$name];
     }
 
-    
+
+    public function all() : array
+    {
+        return $this->__immutableData;
+    }
+
+
     public function list() : array 
     {
         return array_keys($this->__immutableData);

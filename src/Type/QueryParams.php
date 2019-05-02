@@ -9,7 +9,7 @@
 namespace Phore\MicroApp\Type;
 
 
-class QueryParams extends Immutable
+class QueryParams extends Params
 {
 
 }

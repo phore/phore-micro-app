@@ -13,6 +13,7 @@ use http\Exception\InvalidArgumentException;
 use Phore\Di\Container\Producer\DiService;
 use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
+use Phore\MicroApp\Type\Body;
 use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
@@ -60,26 +61,69 @@ class Router
         return $this;
     }
 
-
+    /**
+     * @param string $route
+     * @param callable $fn
+     * @deprecated renamed function to onGet()
+     * @return Router
+     */
     public function get(string $route, callable $fn) : self
+    {
+        return $this->onGet($route, $fn);
+    }
+
+    /**
+     * @param string $route
+     * @param callable $fn
+     * @deprecated renamed function to onPost()
+     * @return Router
+     */
+    public function post(string $route, callable $fn) : self
+    {
+        return $this->onPost($route, $fn);
+    }
+
+    /**
+     * @param string $route
+     * @param callable $fn
+     * @deprecated renamed function to onPut()
+     * @return Router
+     */
+    public function put(string $route, callable $fn) : self
+    {
+        return $this->onPut($route, $fn);
+    }
+
+    /**
+     * @param string $route
+     * @param callable $fn
+     * @deprecated renamed function to onDelete()
+     * @return Router
+     */
+    public function delete(string $route, callable $fn) : self
+    {
+        return $this->onDelete($route, $fn);
+    }
+
+    public function onGet(string $route, callable $fn) : self
     {
         $this->routes[] = ["route"=>$route, "methods"=>["GET"], "call" => $fn];
         return $this;
     }
 
-    public function post(string $route, callable $fn) : self
+    public function onPost(string $route, callable $fn) : self
     {
         $this->routes[] = ["route"=>$route, "methods"=>["POST"], "call" => $fn];
         return $this;
     }
 
-    public function put(string $route, callable $fn) : self
+    public function onPut(string $route, callable $fn) : self
     {
         $this->routes[] = ["route"=>$route, "methods"=>["PUT"], "call" => $fn];
         return $this;
     }
 
-    public function delete(string $route, callable $fn) : self
+    public function onDelete(string $route, callable $fn) : self
     {
         $this->routes[] = ["route"=>$route, "methods"=>["DELETE"], "call" => $fn];
         return $this;
@@ -96,8 +140,9 @@ class Router
                     "request" => $request
                 ]),
             "routeParams" => $routeParamsObj,
-            "GET" => $request->GET
-
+            "GET" => $request->GET,
+            "body" => new Body($request),
+            "params" => $request->GET
         ];
         foreach ($routeParams as $key => $val) {
             if (isset ($callParams[$key]))
@@ -198,6 +243,6 @@ class Router
                     return $ret;
             }
         }
-        throw new \InvalidArgumentException("No action fulfilled request / route not defined.");
+        throw new \InvalidArgumentException("No action fulfilled request / route not defined. ({$request->requestMethod}:{$request->requestPath})");
     }
 }

@@ -25,7 +25,9 @@
     "ext-yaml": "*"
   },
   "require-dev": {
-    "phore/theme-coreui": "dev-master"
+    "phore/theme-coreui": "dev-master",
+    "phore/http-client": "*",
+    "phpunit/phpunit": "*"
   },
   "suggest": {
   },

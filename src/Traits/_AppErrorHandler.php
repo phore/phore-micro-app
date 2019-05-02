@@ -30,6 +30,8 @@ trait _AppErrorHandler
 
     public function triggerException (\Exception $e)
     {
+        if ($this->onExceptionHandler === null)
+            throw new \InvalidArgumentException("No exception handler defined. Define a exception handler using App::setOnExceptionHandler()");
         ($this->onExceptionHandler)($e);
     }
 

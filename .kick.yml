@@ -9,4 +9,7 @@ command:
   init:
     - "composer update"
 
+  test:
+    - "phpunit tests/"
+
 
