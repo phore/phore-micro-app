@@ -12,15 +12,19 @@ namespace Phore\MicroApp\Helper;
 class CsrfToken
 {
 
+    private $newToken = null;
+
     public function __construct()
     {
         if ( ! isset ($_COOKIE["Csrf-token"])) {
-            setcookie("Csrf-token", phore_random_str(24), 0, "/");
+            setcookie("Csrf-token", $this->newToken = phore_random_str(24), 0, "/");
         }
     }
 
     public function getToken()
     {
+        if ($this->newToken !== null)
+            return $this->newToken;
         if ( ! isset ($_COOKIE["Csrf-token"]))
             throw new \InvalidArgumentException("Missing 'Csrf-token'-cookie.");
         return $_COOKIE["Csrf-token"];
