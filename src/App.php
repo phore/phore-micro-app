@@ -75,6 +75,16 @@ class App extends DiContainer
         return $this;
     }
 
+    public function addCtrl(string $className) : self
+    {
+        $ref = new \ReflectionClass($className);
+        if ( ! $ref->hasConstant("ROUTE")) {
+            throw new \InvalidArgumentException("Cannot add addCtrl($className): Class $className requires ROUTE constant.");
+        }
+        $this->router->delegate($ref->getConstant("ROUTE"), $className);
+        return $this;
+    }
+
     private $assets = [];
 
     public function assets(string $assetRoute = "/assets") : AssetSet
