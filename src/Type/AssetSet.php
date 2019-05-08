@@ -38,7 +38,15 @@ class AssetSet
 
     public function addAssetSearchPath(string $path) : self
     {
-        $this->assetSearchPath[] = $path;
+        $realPath = realpath($path);
+        if ($realPath === false) {
+            throw new \InvalidArgumentException("Invalid search path: '$path' - path not found.");
+        }
+        if ($realPath === "/") {
+            throw new \InvalidArgumentException("Invlaid search path: '/' - Root directory is not allowed");
+        }
+
+        $this->assetSearchPath[] = $realPath;
         return $this;
     }
 

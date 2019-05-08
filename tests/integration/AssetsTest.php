@@ -54,4 +54,7 @@ class AssetsTest extends TestCase
         $this->assertEquals("Asset extension 'php' is not allowed. Use App::assets()::addAllowedExtension('php') to allow.", $ret->getBodyJson()["error"]["msg"]);
         $this->assertEquals(500, $ret->getHttpStatus());
     }
+
+
+
 }
