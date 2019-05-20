@@ -17,6 +17,7 @@ use Phore\MicroApp\Auth\Acl;
 use Phore\MicroApp\Auth\AuthManager;
 use Phore\MicroApp\Auth\AuthUser;
 use Phore\MicroApp\Auth\InvalidUserException;
+use Phore\MicroApp\Response\Response;
 use Phore\MicroApp\Router\Router;
 use Phore\MicroApp\Traits\_AppAssets;
 use Phore\MicroApp\Traits\_AppEnv;
@@ -129,6 +130,8 @@ class App extends DiContainer
             $ret = $this->router->__dispatchRoute($request);
             if ($ret === true)
                 return true;
+            if ($ret instanceof Response)
+                return $ret->send();
             if ($this->responseHandler === null)
                 throw new \InvalidArgumentException("No response handler defined.");
             $this->responseHandler->handle($ret);
