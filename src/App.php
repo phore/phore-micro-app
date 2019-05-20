@@ -136,7 +136,10 @@ class App extends DiContainer
                 throw new \InvalidArgumentException("No response handler defined.");
             $this->responseHandler->handle($ret);
         } catch (\Exception $e) {
-            $this->triggerException($e);
+            $ret = $this->triggerException($e);
+            if ($ret instanceof Response) {
+                return $ret->send();
+            }
         }
     }
 

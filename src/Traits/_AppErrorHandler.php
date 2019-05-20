@@ -32,7 +32,7 @@ trait _AppErrorHandler
     {
         if ($this->onExceptionHandler === null)
             throw new \InvalidArgumentException("No exception handler defined. Define a exception handler using App::setOnExceptionHandler()");
-        ($this->onExceptionHandler)($e);
+        return ($this->onExceptionHandler)($e);
     }
 
 }
