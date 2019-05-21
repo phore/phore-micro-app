@@ -152,7 +152,7 @@ class Router
         foreach ($routeParams as $key => $val) {
             if (isset ($callParams[$key]))
                 throw new \InvalidArgumentException("Cannot add route-param '$key': Reserved keyword!");
-            $callParams[$key] = $val;
+            $callParams[$key] = new DiValue($val);
         }
         if ($request->has("POST"))
             $callParams["POST"] = $request->POST;
