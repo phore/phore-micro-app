@@ -21,18 +21,25 @@ trait _AppErrorHandler
     }
 
 
-    protected $onExceptionHandler = null;
+    protected $onExceptionHandler = [];
 
-    public function setOnExceptionHandler(callable $fn)
+    public function setOnExceptionHandler(callable $fn, string $exceptionClass=null)
     {
-        $this->onExceptionHandler = $fn;
+        if ($exceptionClass === null) {
+            $this->onExceptionHandler["default"] = $fn;
+            return;
+        }
+        $this->onExceptionHandler[$exceptionClass] = $fn;
     }
 
     public function triggerException (\Exception $e)
     {
-        if ($this->onExceptionHandler === null)
+        if (isset ($this->onExceptionHandler[get_class($e)]))
+            return ($this->onExceptionHandler[get_class($e)])($e);
+        
+        if ( ! isset ($this->onExceptionHandler["default"]))
             throw new \InvalidArgumentException("No exception handler defined. Define a exception handler using App::setOnExceptionHandler()");
-        ($this->onExceptionHandler)($e);
+        return ($this->onExceptionHandler["default"])($e);
     }
 
 }

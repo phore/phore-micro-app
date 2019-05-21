@@ -45,7 +45,7 @@ class CsrfToken
         if (isset ($_POST) && isset($_POST["csrftoken"]))
             $token = $_POST["csrftoken"];
         if ($token === null)
-            throw new \InvalidArgumentException("Can't detect XSRF-Token from header or Post-Data.");
+            throw new \InvalidArgumentException("Can't detect XSRF-Token from header or Post-Data. (csrftoken)");
         if ($token !== $this->getToken())
             throw new \InvalidArgumentException("Validation of XSRF Token failed.");
         return true;

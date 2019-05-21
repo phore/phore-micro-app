@@ -19,6 +19,8 @@ use Phore\MicroApp\Helper\IPSet;
  * @property-read string $requestMethod     POST/GET/PUT/DELETE
  * @property-read string $requestPath       The Path the route is calculated on
  * @property-read string $remoteAddr         The REMOTE_ADDR or X_FORWARED_FOR
+ * @property-read string $requestScheme     http/https
+ * @property-read string $httpHost          The Hostname called
  * @property-read QueryParams $GET
  * @property-read QueryParams $POST
  */
@@ -83,16 +85,20 @@ class Request extends Immutable
 
     public static function Build()
     {
-
-
         $data = [
             "requestMethod" => strtoupper($_SERVER["REQUEST_METHOD"]),
             "requestPath" => parse_url($_SERVER["REQUEST_URI"])["path"],
             "GET" => new QueryParams($_GET),
-            "remoteAddr" => self::GetRemoteAddr()
+            "remoteAddr" => self::GetRemoteAddr(),
+            "httpHost" => $_SERVER["HTTP_HOST"]
         ];
-
-
+        $data["requestScheme"] = "http";
+        if (isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && strtolower($_SERVER["HTTP_X_FORWARDED_PROTO"]) === "https") {
+            $data["requestScheme"] = "https";
+        }
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+            $data["requestScheme"] = "https";
+        }
 
         if (isset ($_POST))
             $data["POST"] = new QueryParams($_POST);
