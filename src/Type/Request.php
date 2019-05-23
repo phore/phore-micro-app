@@ -93,8 +93,8 @@ class Request extends Immutable
      */
     public function getAuthBearerToken() : ?string
     {
-        if ( ! $this->authorizationMethod !== "bearer")
-            throw new AuthRequiredException("Bearer authorization is required.");
+        if ($this->authorizationMethod !== "bearer")
+            throw new AuthRequiredException("Bearer authorization is required. (Found {$this->authorizationMethod})");
         return $this->authorization;
     }
     
@@ -120,7 +120,7 @@ class Request extends Immutable
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
             $data["requestScheme"] = "https";
         }
-
+        
         if (isset($headers["AUTHORIZATION"])) {
             $auth = explode(" ", $headers["AUTHORIZATION"]);
             if (count ($auth) !== 2)
