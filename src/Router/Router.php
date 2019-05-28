@@ -39,8 +39,9 @@ class Router
         $path = $request->requestPath;
         if(preg_match("|^" . $route . "$|", $path, $params)) {
             foreach ($params as $key => $val) {
-                if ($val == "")
+                if ($val == "") {
                     unset($params[$key]);
+                }
             }
             return true;
         }
