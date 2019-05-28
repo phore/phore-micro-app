@@ -9,6 +9,8 @@
 namespace Phore\MicroApp\Type;
 
 use http\Exception\InvalidArgumentException;
+use Phore\Core\Exception\InvalidDataException;
+use Phore\MicroApp\Exception\AuthRequiredException;
 use Phore\MicroApp\Helper\IPSet;
 
 /**
@@ -21,6 +23,8 @@ use Phore\MicroApp\Helper\IPSet;
  * @property-read string $remoteAddr         The REMOTE_ADDR or X_FORWARED_FOR
  * @property-read string $requestScheme     http/https
  * @property-read string $httpHost          The Hostname called
+ * @property-read string $authorizationMethod   basic|bearer|mac
+ * @property-read string $authorization         The Authorization code
  * @property-read QueryParams $GET
  * @property-read QueryParams $POST
  */
@@ -83,14 +87,31 @@ class Request extends Immutable
     }
 
 
+    /**
+     * @return null|string
+     * @throws AuthRequiredException
+     */
+    public function getAuthBearerToken() : ?string
+    {
+        if ($this->authorizationMethod !== "bearer")
+            throw new AuthRequiredException("Bearer authorization is required. (Found {$this->authorizationMethod})");
+        return $this->authorization;
+    }
+    
+    
     public static function Build()
     {
+        $headers = getallheaders();
+        $headers = array_change_key_case($headers, CASE_UPPER);
+
         $data = [
             "requestMethod" => strtoupper($_SERVER["REQUEST_METHOD"]),
             "requestPath" => parse_url($_SERVER["REQUEST_URI"])["path"],
             "GET" => new QueryParams($_GET),
             "remoteAddr" => self::GetRemoteAddr(),
-            "httpHost" => $_SERVER["HTTP_HOST"]
+            "httpHost" => $_SERVER["HTTP_HOST"],
+            "authorizationMethod" => null,
+            "authorization" => null
         ];
         $data["requestScheme"] = "http";
         if (isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && strtolower($_SERVER["HTTP_X_FORWARDED_PROTO"]) === "https") {
@@ -98,6 +119,18 @@ class Request extends Immutable
         }
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
             $data["requestScheme"] = "https";
+        }
+        
+        if (isset($headers["AUTHORIZATION"])) {
+            $auth = explode(" ", $headers["AUTHORIZATION"]);
+            if (count ($auth) !== 2)
+                throw new InvalidDataException("Invalid Authorization header in request.");
+            $data["authorizationMethod"] = strtolower($auth[0]);
+            if ( ! in_array($data["authorizationMethod"], ["basic", "bearer", "mac"]))
+                throw new InvalidDataException("Invalid Authorization header in request. Method unknown.");
+            $data["authorization"] = $auth[1];
+            if ($data["authorization"] == "")
+                throw new InvalidDataException("Invalid Authorization token.");
         }
 
         if (isset ($_POST))
