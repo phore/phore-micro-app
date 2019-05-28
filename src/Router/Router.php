@@ -37,8 +37,13 @@ class Router
         $route = preg_replace("|\\:([a-zA-Z0-9\\_]+)|", '(?<$1>[^/]*)', $route);
         
         $path = $request->requestPath;
-        if(preg_match("|^" . $route . "$|", $path, $params))
+        if(preg_match("|^" . $route . "$|", $path, $params)) {
+            foreach ($params as $key => $val) {
+                if ($val == "")
+                    unset($params[$key]);
+            }
             return true;
+        }
         return false;
     }
 
