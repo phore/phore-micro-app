@@ -39,6 +39,18 @@ class Acl
     }
 
 
+    /**
+     * Remove all rules
+     *
+     * @return Acl
+     */
+    public function clear() : self
+    {
+        $this->rules = [];
+        return $this;
+    }
+
+
     private $isValidated = false;
 
 

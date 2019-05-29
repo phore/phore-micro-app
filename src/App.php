@@ -45,6 +45,15 @@ class App extends DiContainer
 {
     use _AppEnv, _AppErrorHandler, _AppResponse, _AppEvents;
 
+    /**
+     * First event fired on serve() function
+     *
+     * $request is available.
+     *
+     * Executed before acl is checked
+     */
+    const EVENT_ON_REQUEST = "on_request";
+
 
     public function __construct()
     {
@@ -123,6 +132,10 @@ class App extends DiContainer
         if ($request === null)
             $request = Request::Build();
         $this->define("request", new DiValue($request));
+
+        if (($ret = $this->triggerEvent(self::EVENT_ON_REQUEST)) instanceof Response) {
+            return $ret->send();
+        }
 
         $this->acl->validate($request);
 

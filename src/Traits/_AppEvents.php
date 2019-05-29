@@ -9,8 +9,13 @@
 namespace Phore\MicroApp\Traits;
 
 
+use Phore\HttpClient\PhoreHttpResponse;
+use Phore\MicroApp\Response\Response;
+
 trait _AppEvents
 {
+
+
 
     private $events = [];
 
@@ -22,13 +27,24 @@ trait _AppEvents
         return $this;
     }
 
-    public function triggerEvent(string $eventName, array $diParams=[])
+    /**
+     *
+     * Return a response if the request
+     *
+     * @param string $eventName
+     * @param array $diParams
+     * @return bool
+     */
+    public function triggerEvent(string $eventName, array $diParams=[]) : ?Response
     {
         if ( ! isset($this->events[$eventName])) {
-            return 0;
+            return true;
         }
         foreach ($this->events[$eventName] as $curCb) {
-            $curCb(...$this->buildParametersFor($curCb, $diParams));
+            $ret = $curCb(...$this->buildParametersFor($curCb, $diParams));
+            if ($ret instanceof Response) {
+                return $ret;
+            }
         }
     }
 
