@@ -38,7 +38,7 @@ trait _AppEvents
     public function triggerEvent(string $eventName, array $diParams=[]) : ?Response
     {
         if ( ! isset($this->events[$eventName])) {
-            return true;
+            return null;
         }
         foreach ($this->events[$eventName] as $curCb) {
             $ret = $curCb(...$this->buildParametersFor($curCb, $diParams));
@@ -46,6 +46,7 @@ trait _AppEvents
                 return $ret;
             }
         }
+        return null;
     }
 
 }
