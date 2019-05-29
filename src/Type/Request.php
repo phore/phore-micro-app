@@ -86,6 +86,16 @@ class Request extends Immutable
         }
     }
 
+    /**
+     * Return the FQDN URL of the request (for backlinks etc.)
+     * 
+     * @param bool $includeQueryParams
+     * @return string
+     */
+    public function getFqdnUrl(bool $includeQueryParams = false) : string
+    {
+        return $this->requestScheme . "://" . $this->httpHost . $this->requestPath;
+    }
 
     /**
      * @return null|string
