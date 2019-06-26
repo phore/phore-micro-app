@@ -20,6 +20,8 @@ class RedirectResponse implements Response
     }
     
     public function send() : bool {
+        // Ignore if browser quits connection before all data is written.
+        
         header("Location: {$this->url}");
         echo "<a href=\"{$this->url}\">Click here to if redirect does not function correct</a>";
         return true;
