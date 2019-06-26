@@ -67,7 +67,7 @@ class Request extends Immutable
      */
     public function getBody() : string
     {
-        if ($this->requestMethod !== "POST" && $this->requestMethod !== "PUT")
+        if ($this->requestMethod !== "POST" && $this->requestMethod !== "PUT" && $this->requestMethod !== "DELETE")
             throw new \InvalidArgumentException("Body is only availabe on POST/PUT requests.");
         return file_get_contents("php://input");
     }
