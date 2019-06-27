@@ -25,6 +25,7 @@ use Phore\MicroApp\Helper\IPSet;
  * @property-read string $httpHost          The Hostname called
  * @property-read string $authorizationMethod   basic|bearer|mac
  * @property-read string $authorization         The Authorization code
+ * @property-read string $referer          Referer
  * @property-read QueryParams $GET
  * @property-read QueryParams $POST
  */
@@ -121,7 +122,8 @@ class Request extends Immutable
             "remoteAddr" => self::GetRemoteAddr(),
             "httpHost" => $_SERVER["HTTP_HOST"],
             "authorizationMethod" => null,
-            "authorization" => null
+            "authorization" => null,
+            "referer" => null
         ];
         $data["requestScheme"] = "http";
         if (isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && strtolower($_SERVER["HTTP_X_FORWARDED_PROTO"]) === "https") {
@@ -129,6 +131,10 @@ class Request extends Immutable
         }
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
             $data["requestScheme"] = "https";
+        }
+        
+        if (isset ($headers["REFERER"])) {
+            $data["referer"] = $headers["REFERER"];
         }
         
         if (isset($headers["AUTHORIZATION"])) {
