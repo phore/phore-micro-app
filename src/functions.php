@@ -33,6 +33,8 @@ function href($path = [], array $params=null) : string {
         }
         $path .= http_build_query($params);
     }
+    if ( ! is_string($path))
+        throw new InvalidArgumentException("Invalid data in parameter 1: Must be string or array");
     return $path;
 }
 
