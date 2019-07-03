@@ -69,11 +69,11 @@ class HtmlTemplateResponse extends HtmlResponse
         return implode("", $tpl);
     }
 
-    public function __construct(string $templateFile, array $templateData=[], array $header = null)
+    public function __construct(string $templateFile, array $templateData=[], array $header = null, int $httpResponseCode=200)
     {
 
         $htmlData = $this->parseTemplate($templateFile, $templateData);
-        parent::__construct($htmlData, $header);
+        parent::__construct($htmlData, $header, $httpResponseCode);
     }
 
 
