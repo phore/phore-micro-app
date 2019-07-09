@@ -116,12 +116,6 @@ class Acl
         $this->authManager->requestAuth("Access denied by acl.");
         return false;
     }
-
-
-    public function __destruct()
-    {
-        if ( ! $this->isValidated)
-            throw new \Exception("Securty Exception: Acl::validate() was not called. No access restrictions apply!");
-    }
+    
 
 }
