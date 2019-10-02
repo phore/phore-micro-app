@@ -88,6 +88,52 @@ class Request extends Immutable
     }
 
     /**
+     * Yml-decode the body
+     *
+     * @return array
+     */
+    public function getYMLBody() : array
+    {
+        try{
+            return phore_yml_decode($bodyRaw = $this->getBody());
+        } catch(\InvalidArgumentException $e){
+            throw new \InvalidArgumentException("Cannot yml-decode body: '$bodyRaw'", 0, $e);
+        }
+    }
+
+    /**
+     * json-decode or Yml-decode the body
+     *
+     * @return array
+     */
+    public function getStructBody() : array
+    {
+        $contentType = $_SERVER["CONTENT_TYPE"];
+        if(in_array($contentType, $this->_getJsonContentTypes())){
+            return $this->getJsonBody();
+        } elseif (in_array($contentType, $this->_getYmlContentTypes())) {
+            return $this->getYMLBody();
+        }else{
+            throw new \InvalidArgumentException("Unknown Struct_Type: " . $contentType);
+        }
+    }
+
+    public function _getJsonContentTypes(){
+        return ["application/json",
+                "application/x-javascript",
+                "text/javascript",
+                "text/x-javascript",
+                "text/x-json"];
+    }
+
+    public function _getYmlContentTypes(){
+        return ["text/yaml",
+                "test/x-yaml",
+                "application/yaml",
+                "application/x-yaml"];
+    }
+
+    /**
      * Return the FQDN URL of the request (for backlinks etc.)
      * 
      * @param bool $includeQueryParams
