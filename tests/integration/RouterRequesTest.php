@@ -54,4 +54,5 @@ class RouterRequesTest extends TestCase
         $ret = phore_http_request(self::TEST_URL . "/post/str")->withPostData($testStr)->send()->getBody();
         $this->assertEquals($testStr, $ret);
     }
+
 }

@@ -95,7 +95,7 @@ class Request extends Immutable
     public function getYMLBody() : array
     {
         try{
-            return phore_yml_decode($bodyRaw = $this->getBody());
+            return phore_yaml_decode($bodyRaw = $this->getBody());
         } catch(\InvalidArgumentException $e){
             throw new \InvalidArgumentException("Cannot yml-decode body: '$bodyRaw'", 0, $e);
         }
