@@ -109,11 +109,11 @@ class Request extends Immutable
     public function getStructBody() : array
     {
         $contentType = $_SERVER["CONTENT_TYPE"];
-        if(in_array($contentType, $this->_getJsonContentTypes())){
+        if (in_array($contentType, $this->_getJsonContentTypes())){
             return $this->getJsonBody();
         } elseif (in_array($contentType, $this->_getYmlContentTypes())) {
             return $this->getYMLBody();
-        }else{
+        } else {
             throw new \InvalidArgumentException("Unknown Struct_Type: " . $contentType);
         }
     }
@@ -132,6 +132,7 @@ class Request extends Immutable
                 "application/yaml",
                 "application/x-yaml"];
     }
+
 
     /**
      * Return the FQDN URL of the request (for backlinks etc.)
