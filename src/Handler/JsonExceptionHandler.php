@@ -63,7 +63,7 @@ class JsonExceptionHandler
         }
         echo json_encode($error);
         if ($headerAlreadySent) {
-            throw new \InvalidArgumentException("JsonExceptionHandler: Cannot set header(): Output started in $file Line $line.");
+            throw new \InvalidArgumentException("JsonExceptionHandler: Cannot set header(): Output started in $file Line $line. Original Exception Msg: {$e->getMessage()}", 1, $e);
         }
         exit;
     }

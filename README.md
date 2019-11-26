@@ -12,22 +12,32 @@ document issues.
 - Fluent Api
 - Role-Based Authentication
 
+Quicklinks
+- Assets
+- Authentication
+- Session
+- OAuth
+- Firewall ACL
+
+## Naming conventions
+
+Classes for micro-app and libraries are **not** prefixed with `phore_` for convenience.
+(It's not framework for framework stuff)
+
 ## Quickstart
 
 ```index.php:```
 ```php
 $app = new App();
-$app->acl->addRule(aclRule()->ALLOW());                     // Allow all requests
 
 $app->router
     ->onGet("/",                                              // Define a Action for HTTP-GET-Requests to /
-        function() use ($app) {                             
-            $app->out("Hello World");                       // Hello World!
-            return true;                                    // Important: Return true if output was already sent.
+        function() {                             
+            return "Hello world";                             // Important: Return true if output was already sent.
         }
     );
     
-$app->serve();                                              // Run the App
+$app->serve();                                                // Run the App
 ```
 
 ## Installation
@@ -38,31 +48,6 @@ We suggest using [composer](http://getcomposer.com):
 composer require phore/micro-app
 ``` 
 
-## [ACL (Access Control Lists / Firewall)](doc/acl/acl.md) *([Example](doc/acl/acl.php), [FAQ](doc/acl/acl-faq.md))*
-
-
-***Access Control Lists*** define which User/IP may access which route in
-your application. It will initiate the Authentication Process (see Authentication)
-or reject the request.
-
-ACLs will be processed from top to bottom. The first rule that matches the request
-will win.
-
-### Examples
-
-- ***ALLOW*** if route matches `/api/admin/*` ***AND*** role matches `@admin` ***AND*** network matches `10.0.0.0/8`:
-    ```php
-    $app->acl->addRule(aclRule()->route("/api/admin/*")->role("@admin")->network("10.0.0.0/8")->ALLOW());
-    ```
-
-- ***ALLOW*** access to routes `/admin/*` if authenticated user is in `@admin`-group:
-    ```php
-    $app->acl->addRule(aclRule()->route("/admin/*")->role("@admin")->ALLOW());
-    ```
-
-
-***By default phore-micro-app will deny all requests. So you have to specify explicitly
-which requests to allow***
 
 ## [Routing](docs/router/routing.md) *([Example](docs/router/routing-example.php))*
 
@@ -108,35 +93,17 @@ Request specific parameters are:
 | Parameter Name | ClassName        | Description                   |
 |----------------|------------------|-------------------------------|
 | `$request`     | `Request`        | The full request object       |
+| `$post`        | `Post`           | Post data                     |
+| `$get`         | `Get`           | Get data (Query Params)       |
+| `$body`        | `Body`           | Body object                   |
+| `$files`       | `Files`          ||
+||
 | `$route`       | `Route`          | The current route object      |
 | `$params`      | `Params`         | Container with QueryParameters|
 | `$routeParams` | `RouteParams`    | Container with parameters     |
 | `$GET`         | `QueryParams`    | Query parameters              |
 | `$POST`        | `QueryParams`    | Parameters send by HTTP-POST  |
 
-
-## Assets *([Example](doc/assets/assets.php))*
-
-Assets are located below the `/assets/`-route. You can define one or
-more directories, the asset-manager will try to find the asset.
-
-`/assets/*` will be allowed for all requests in ACL. So don't put
-sensitive data here.
-
-- Allow all requests to `/asset/*` and link them to local assets:
-  ```php
-  $app->assets()->addAssetSearchPath(__DIR__ . "/asset_data/");
-  $app->assets()->addAssetSearchPath(__DIR__ . "/alt_asset_data/");
-  ```
-  Request to `/asset/css/some.css`: The asset-manager will try to
-  find the file in `/asset_data/css/some.css`. If it does not exist there,
-  it will try to find in `/alt_esset_data/css/some.css`
-  
-- Virtual assets are generated on the fly.
-  ```php
-  $app->assets()->addVirtualAsset("all.js", [__DIR__ . "/some/file.js", __DIR__ . "/some/other.js"]);
-  ``` 
-  The virtual asset is available in path `/asset/all.js`.
 
 
 ## Dependency Injection
@@ -185,22 +152,3 @@ $app->get("/", function() {
 ```
 
 
-## Authentication & Authorization
-
-- Use `BasicUserProvider` to load users from a yaml-file (see [user-passwd.yml](doc/acl/user-passwd.yml))
-    ```php
-    $app->authManager->setUserProvider($basicUserProvider = new BasicUserProvider());
-    $basicUserProvider->addUserYamlFile(__DIR__ . "/../user-passwd.yml");
-    ```
-- Create secure and salted SHA-512 passwords:
-  ```bash
-  mkpasswd -m sha-512
-  ```
-
-
-## Role based Authentication
-
-Predefined Group hierachy:
-
-- Highest Priority `@owner` => `@admin` => `@member` => `@user` Lowest Priority
-                            
