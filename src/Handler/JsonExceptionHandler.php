@@ -28,20 +28,19 @@ class JsonExceptionHandler
 
     public function __invoke(\Exception $e)
     {
-        if (headers_sent($file, $line)) {
-            throw new \InvalidArgumentException(
-                "Headers were already sent by $file Line $line", 0, $e
-            );
-        }
         $responseBody = null;
-        if ($e instanceof HttpException) {
-            header("HTTP/1.1 {$e->getCode()} {$e->getMessage()}");
-            $responseBody = $e->responseBody;
-        } else {
-            header("HTTP/1.1 500 Internal Server Error");
+        $headerAlreadySent = true;
+        if ( ! headers_sent($file, $line)) {
+            $headerAlreadySent = false;
+            if ($e instanceof HttpException) {
+                header("HTTP/1.1 {$e->getCode()} {$e->getMessage()}");
+                $responseBody = $e->responseBody;
+            } else {
+                header("HTTP/1.1 500 Internal Server Error");
+            }
+            header("Content-Type: application/json");
         }
-        header("Content-Type: application/json");
-        
+
         
         $error = [
             "error" => [
@@ -63,6 +62,9 @@ class JsonExceptionHandler
                 throw new \InvalidArgumentException("A filter must return something.");
         }
         echo json_encode($error);
+        if ($headerAlreadySent) {
+            throw new \InvalidArgumentException("JsonExceptionHandler: Cannot set header(): Output started in $file Line $line.");
+        }
         exit;
     }
 
