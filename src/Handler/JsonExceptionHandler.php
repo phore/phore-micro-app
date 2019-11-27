@@ -10,6 +10,7 @@ namespace Phore\MicroApp\Handler;
 
 
 use Phore\MicroApp\Exception\HttpException;
+use Psr\Log\LoggerInterface;
 
 class JsonExceptionHandler
 {
@@ -19,15 +20,31 @@ class JsonExceptionHandler
      */
     private $filter = [];
 
+    /**
+     * @var null|LoggerInterface
+     */
+    private $logger = null;
+    
     public function addFilter(callable $filter) : self
     {
         $this->filter[] = $filter;
         return $this;
     }
+    
+    
+    public function setLogger(LoggerInterface $logger) 
+    {
+        $this->logger = $logger;    
+    }
+    
 
 
     public function __invoke(\Exception $e)
     {
+        if ($this->logger !== null) {
+            $this->logger->alert("ExceptionHandler: '{$e->getMessage()}' in {$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}");
+        }
+        
         $responseBody = null;
         $headerAlreadySent = true;
         if ( ! headers_sent($file, $line)) {
