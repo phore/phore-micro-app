@@ -22,6 +22,7 @@ use Phore\MicroApp\Helper\IPSet;
  * @property-read string $requestPath       The Path the route is calculated on
  * @property-read string $remoteAddr         The REMOTE_ADDR or X_FORWARED_FOR
  * @property-read string $requestScheme     http/https
+ * @property-read string $queryString       QueryString after the questionmark
  * @property-read string $httpHost          The Hostname called
  * @property-read string $authorizationMethod   basic|bearer|mac
  * @property-read string $authorization         The Authorization code
