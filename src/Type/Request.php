@@ -165,6 +165,7 @@ class Request extends Immutable
         $data = [
             "requestMethod" => strtoupper($_SERVER["REQUEST_METHOD"]),
             "requestPath" => parse_url($_SERVER["REQUEST_URI"])["path"],
+            "queryString" => isset(parse_url($_SERVER["REQUEST_URI"])["query"]) ? parse_url($_SERVER["REQUEST_URI"])["query"] : "",
             "GET" => new QueryParams($_GET),
             "remoteAddr" => self::GetRemoteAddr(),
             "httpHost" => $_SERVER["HTTP_HOST"],
