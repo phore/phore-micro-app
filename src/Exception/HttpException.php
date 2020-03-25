@@ -19,7 +19,7 @@ class HttpException extends \Exception
     public function __construct(
         string $message = "",
         int $code = 500,
-        $responseBody = null,
+        $responseBody = "(HttpException without body)",
         Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
