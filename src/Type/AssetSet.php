@@ -97,5 +97,6 @@ class AssetSet
             }
         }
         throw new HttpException("Asset '$assetPath' not found.", 404, "Asset '$assetPath' not found. (AssetSet)");
+
     }
 }
