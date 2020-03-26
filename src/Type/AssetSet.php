@@ -76,7 +76,7 @@ class AssetSet
         $ext = pathinfo($assetPath, PATHINFO_EXTENSION);
 
         if ( ! in_array(strtolower($ext), $this->allowedExtensions)) {
-            throw new \InvalidArgumentException("Asset extension '$ext' is not allowed. Use App::assets()::addAllowedExtension('$ext') to allow.");
+            throw new \InvalidArgumentException("Asset extension '$ext' is not allowed. (Path: '$assetPath') Use App::assets()::addAllowedExtension('$ext') to allow.");
         }
 
         if (isset ($this->virtualAsset[$assetPath])) {
