@@ -5,6 +5,7 @@ namespace Phore\MicroApp\Handler;
 
 
 use Phore\MicroApp\Exception\HttpException;
+use Phore\MicroApp\Response\StatusCodes;
 use Psr\Log\LoggerInterface;
 
 class AdvancedJsonExceptionHandler
@@ -44,7 +45,7 @@ class AdvancedJsonExceptionHandler
         if ( ! headers_sent($file, $line)) {
             $headerAlreadySent = false;
             if ($e instanceof HttpException) {
-                header("HTTP/1.1 {$e->getCode()} {$e->getMessage()}");
+                header(StatusCodes::getHeader($e->getCode()));
                 $responseBody = $e->responseBody;
             } else {
                 header("HTTP/1.1 500 Internal Server Error");
