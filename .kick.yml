@@ -6,10 +6,10 @@ from: "infracamp/kickstart-flavor-gaia:testing"
 apache_fallback_resource: "/index.php"
 
 command:
-  init:
+  build:
     - "composer update"
 
   test:
-    - "phpunit tests/"
+    - "vendor/bin/phpunit tests/"
 
 
