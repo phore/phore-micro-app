@@ -51,7 +51,7 @@ class AssetsTest extends TestCase
     public function testAssets500RaisedOnUnsecureExtension()
     {
         $ret = phore_http_request(self::TEST_URL . "/assets/some/undefined.php")->send(false);
-        $this->assertEquals("Asset extension 'php' is not allowed. Use App::assets()::addAllowedExtension('php') to allow.", $ret->getBodyJson()["error"]["msg"]);
+        $this->assertEquals("Asset extension 'php' is not allowed. (Path: 'some/undefined.php') Use App::assets()::addAllowedExtension('php') to allow.", $ret->getBodyJson()["error"]["msg"]);
         $this->assertEquals(500, $ret->getHttpStatus());
     }
 
