@@ -38,20 +38,20 @@ class AssetsTest extends TestCase
     public function testAssetsCantEscapeFolder()
     {
         $ret = phore_http_request(self::TEST_URL . "/assets/~/index.php")->send(false)->getBodyJson();
-        $this->assertEquals("Bogus characters in assetFile.", $ret["error"]["msg"]);
+        $this->assertStringContainsString("Bogus characters in assetFile.", $ret["details"]);
     }
 
     public function testAssets404RaisedOnNotFound()
     {
         $ret = phore_http_request(self::TEST_URL . "/assets/some/undefined.png")->send(false);
-        $this->assertEquals("Asset 'some/undefined.png' not found.", $ret->getBodyJson()["error"]["msg"]);
+        $this->assertStringContainsString("Asset 'some/undefined.png' not found.", $ret->getBodyJson()["details"]);
         $this->assertEquals(404, $ret->getHttpStatus());
     }
 
     public function testAssets500RaisedOnUnsecureExtension()
     {
         $ret = phore_http_request(self::TEST_URL . "/assets/some/undefined.php")->send(false);
-        $this->assertEquals("Asset extension 'php' is not allowed. (Path: 'some/undefined.php') Use App::assets()::addAllowedExtension('php') to allow.", $ret->getBodyJson()["error"]["msg"]);
+        $this->assertStringContainsString("Asset extension 'php' is not allowed. (Path: 'some/undefined.php') Use App::assets()::addAllowedExtension('php') to allow.", $ret->getBodyJson()["details"]);
         $this->assertEquals(500, $ret->getHttpStatus());
     }
 
