@@ -99,19 +99,19 @@ class StatusCodes
         508 => 'Loop Detected', 510 => 'Not Extended', 511 => 'Network Authentication Required', 599 => 'Network Connect Timeout Error'
     );
 
-    public static function getDescription(int $code) : string
+    public static function getStatusDescription(int $code) : string
     {
         return (string) phore_pluck($code, self::$description, new \InvalidArgumentException("HTTP status code '$code' invalid or unknown."));
     }
 
-    public static function getHeader(int $code) : string
+    public static function getStatusLine(int $code) : string
     {
-        return "HTTP/1.1 $code " . self::getDescription($code);
+        return "HTTP/1.1 $code " . self::getStatusDescription($code);
     }
 
     public static function isError(int $code) : bool
     {
-        self::getDescription($code);
+        self::getStatusDescription($code);
         return $code >= self::HTTP_BAD_REQUEST;
     }
 

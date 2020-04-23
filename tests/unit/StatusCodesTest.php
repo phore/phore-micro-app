@@ -9,14 +9,14 @@ class StatusCodesTest extends TestCase
 {
     public function testGetHeader()
     {
-        $this->assertEquals("HTTP/1.1 200 OK", StatusCodes::getHeader(200));
+        $this->assertEquals("HTTP/1.1 200 OK", StatusCodes::getStatusLine(200));
     }
 
     public function testExceptionGetDescriptionUnknown()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("HTTP status code '9999' invalid or unknown.");
-        StatusCodes::getHeader(9999);
+        StatusCodes::getStatusLine(9999);
     }
 
     public function testIsError()
