@@ -16,6 +16,7 @@ class HttpExceptionTest extends TestCase
     public function testGetProblemDetails() {
         $e = new HttpException("Bad Request Details", StatusCodes::HTTP_BAD_REQUEST);
         $problemDetails = $e->getProblemDetails(true);
+        print_r($problemDetails);
         $this->assertEquals(StatusCodes::HTTP_BAD_REQUEST, $problemDetails['status']);
     }
 
