@@ -66,18 +66,21 @@ class JsonExceptionHandler
             header("Content-Type: application/problem+json");
         }
 
-        $problem = [
-            "type" => "uri/error/" . str_replace('\\', '/', get_class($e)),
-            "title" => StatusCodes::getStatusDescription(StatusCodes::HTTP_INTERNAL_SERVER_ERROR),
-            "status" => StatusCodes::HTTP_INTERNAL_SERVER_ERROR,
-            "details" =>  "Exception '{$e->getMessage()}' in {$e->getFile()}({$e->getLine()})",
-            "instance" => "uri/error/" . time()
-        ];
-        if($this->debugMode)
-            $problem['trace'] = explode("\n", $e->getTraceAsString());
-        
+        if(empty($problem)) {
+            $problem = [
+                "type" => "uri/error/" . str_replace('\\', '/', get_class($e)),
+                "title" => StatusCodes::getStatusDescription(StatusCodes::HTTP_INTERNAL_SERVER_ERROR),
+                "status" => StatusCodes::HTTP_INTERNAL_SERVER_ERROR,
+                "details" =>  "Exception '{$e->getMessage()}' in {$e->getFile()}({$e->getLine()})",
+                "instance" => "uri/error/" . time()
+            ];
+            if($this->debugMode)
+                $problem['trace'] = explode("\n", $e->getTraceAsString());
+        }
+
+
         foreach ($this->filter as $curFilter) {
-            $error = $curFilter($problem);
+            $problem = $curFilter($problem);
             if ($problem === null)
                 throw new \InvalidArgumentException("A filter must return something.");
         }
