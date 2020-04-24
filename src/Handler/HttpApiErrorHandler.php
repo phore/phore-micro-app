@@ -108,8 +108,21 @@ class HttpApiErrorHandler
             $this->logger->alert("ExceptionHandler: {title}:'{details}' in {file} line {line}, trace: {traceString}", $loggerInfo);
         }
 
+
+
         if($this->debugMode) {
-            $problemDetails['trace'] = $ex->getTrace();
+            $problemDetails['traceString'] = explode("\n",$ex->getTraceAsString());
+//            $traces = [];
+//            foreach($ex->getTrace() as $trace) {
+////                $trace['args'][0];
+////                $e = new \InvalidArgumentException();
+////                $e->
+//                $msg = strip_tags(phore_pluck("args.0.xdebug_message", $trace, ""));
+//                if(!empty($msg))
+//                    $trace['args'][0]['xdebug_message'] = $msg;
+//                $traces[] = $trace;
+//            }
+//            $problemDetails['trace'] = $traces;//$ex->getTrace();
         }
 
         $headerAlreadySent = true;

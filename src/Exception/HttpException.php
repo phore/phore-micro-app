@@ -9,12 +9,11 @@
 namespace Phore\MicroApp\Exception;
 
 
-use Phore\MicroApp\Response\StatusCodes;
 use Throwable;
 
 class HttpException extends \Exception
 {
-    
+
     public $responseBody = null;
 
     public function __construct(
@@ -25,21 +24,6 @@ class HttpException extends \Exception
     ) {
         parent::__construct($message, $code, $previous);
         $this->responseBody = $responseBody;
-    }
-
-    public function getProblemDetails(bool $debug = false) : array
-    {
-        $problem = [
-            "type" => "uri/error/" . str_replace('\\', '/', get_class($this)),
-            "title" => StatusCodes::getStatusDescription($this->code),
-            "status" => $this->code,
-            "details" => "Exception '$this->message' in {$this->getFile()}({$this->getLine()}): $this->responseBody",
-            "instance" => "uri/error/" . time()
-        ];
-        if($debug)
-            $problem['trace'] = explode("\n", $this->getTraceAsString());
-
-        return $problem;
     }
 
 }

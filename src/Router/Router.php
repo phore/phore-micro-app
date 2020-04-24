@@ -192,6 +192,7 @@ class Router
                 $ret = $fn(...$this->app->buildParametersFor($fn, $callParams));
                 if ($ret !== null)
                     return $ret;
+                throw new \LogicException("Route '{$request->requestMethod}:{$request->requestPath}' does not return anything");
             }
 
             if (isset($curRoute["delegate"])) {

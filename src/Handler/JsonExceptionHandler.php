@@ -10,7 +10,6 @@ namespace Phore\MicroApp\Handler;
 
 
 use Phore\MicroApp\Exception\HttpException;
-use Phore\MicroApp\Response\StatusCodes;
 use Psr\Log\LoggerInterface;
 
 class JsonExceptionHandler
@@ -26,27 +25,19 @@ class JsonExceptionHandler
      */
     private $logger = null;
 
-    /**
-     * If true it will provide additional details like trace in the RFC7807 http error JSON
-     * @var bool
-     */
-    private $debugMode = false;
-    
     public function addFilter(callable $filter) : self
     {
         $this->filter[] = $filter;
         return $this;
     }
-    
-    public function setLogger(LoggerInterface $logger) 
+
+
+    public function setLogger(LoggerInterface $logger)
     {
-        $this->logger = $logger;    
+        $this->logger = $logger;
     }
 
-    public function setDebugMode(bool $active)
-    {
-        $this->debugMode = $active;
-    }
+
 
     public function __invoke(\Exception $e)
     {
@@ -54,37 +45,40 @@ class JsonExceptionHandler
             $this->logger->alert("ExceptionHandler: '{$e->getMessage()}' in {$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}");
         }
 
+        $responseBody = null;
         $headerAlreadySent = true;
         if ( ! headers_sent($file, $line)) {
             $headerAlreadySent = false;
             if ($e instanceof HttpException) {
-                header(StatusCodes::getStatusLine($e->getCode()));
-                $problem = $e->getProblemDetails($this->debugMode);
+                header("HTTP/1.1 {$e->getCode()} {$e->getMessage()}");
+                $responseBody = $e->responseBody;
             } else {
-                header(StatusCodes::getStatusLine(StatusCodes::HTTP_INTERNAL_SERVER_ERROR));
+                header("HTTP/1.1 500 Internal Server Error");
             }
-            header("Content-Type: application/problem+json");
+            header("Content-Type: application/json");
         }
 
-        if(empty($problem)) {
-            $problem = [
-                "type" => "uri/error/" . str_replace('\\', '/', get_class($e)),
-                "title" => StatusCodes::getStatusDescription(StatusCodes::HTTP_INTERNAL_SERVER_ERROR),
-                "status" => StatusCodes::HTTP_INTERNAL_SERVER_ERROR,
-                "details" =>  "Exception '{$e->getMessage()}' in {$e->getFile()}({$e->getLine()})",
-                "instance" => "uri/error/" . time()
-            ];
-            if($this->debugMode)
-                $problem['trace'] = explode("\n", $e->getTraceAsString());
-        }
+
+        $error = [
+            "error" => [
+                "msg" => $e->getMessage(),
+                "code" => $e->getCode(),
+                "class" => get_class($e),
+                "file" => $e->getFile(). "({$e->getLine()})",
+                "trace" => explode("\n", $e->getTraceAsString()),
+                "errors" => []
+            ]
+        ];
+        if ($responseBody !== null)
+            $data = $responseBody;
 
 
         foreach ($this->filter as $curFilter) {
-            $problem = $curFilter($problem);
-            if ($problem === null)
+            $error = $curFilter($error);
+            if ($error === null)
                 throw new \InvalidArgumentException("A filter must return something.");
         }
-        echo json_encode($problem);
+        echo json_encode($error);
         if ($headerAlreadySent) {
             throw new \InvalidArgumentException("JsonExceptionHandler: Cannot set header(): Output started in $file Line $line. Original Exception Msg: {$e->getMessage()}", 1, $e);
         }

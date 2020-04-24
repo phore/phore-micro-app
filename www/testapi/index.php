@@ -2,6 +2,7 @@
 
 namespace App;
 use Phore\MicroApp\App;
+use Phore\MicroApp\Exception\HttpApiException;
 use Phore\MicroApp\Handler\HttpApiErrorHandler;
 use Phore\MicroApp\Handler\JsonExceptionHandler;
 use Phore\MicroApp\Handler\JsonResponseHandler;
@@ -13,33 +14,24 @@ require __DIR__ . "/../../vendor/autoload.php";
 
 $app = new App();
 $app->setResponseHandler(new JsonResponseHandler());
-$app->setOnExceptionHandler(new JsonExceptionHandler());
+$app->setOnExceptionHandler(new HttpApiErrorHandler(null, true));
 $app->acl->addRule(aclRule("*")->ALLOW());
 
 $app->assets("/test/assets")->addAssetSearchPath(__DIR__ . "/_assets_dir");
 $app->assets("/test/assets")->addVirtualAsset("virtual.txt", __DIR__ . "/_assets_dir/file.txt");
 
-$app->router->onGet("/test/:param1/:param2?", function (string $param1, Params $params, string $param2=null) {
-     $ret = [
-         "param1" => $param1,
-         "param2" => $param2,
-         "params" => $params->all()
-     ];
-     return $ret;
+$app->router->onGet("/testapi/status", function () {
+    return ["success" => true];
 });
 
-
-$app->router->onPost("/test/post/:what", function (string $what, Body $body) {
-    switch($what) {
-        case "json":
-            return $body->parseJson();
-        case "str":
-            echo $body->getContents();
-            return true;
-        default:
-            throw new \Exception("Invalid what route");
-    }
+$app->router->onGet("/testapi/ex/:code", function (int $code) {
+    throw new HttpApiException("test error code '$code'", $code);
 });
 
+$app->router->onGet("/testapi/null", function () {
+    return null;
+});
+
+$app->router->onGet("/testapi/void", function () {});
 
 $app->serve();
