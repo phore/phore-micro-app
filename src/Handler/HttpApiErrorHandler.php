@@ -83,35 +83,55 @@ class HttpApiErrorHandler
 
         $ex = $this->mapException($ex);
 
+        $problemDetails = [
+            "type" => "about:blank",
+            "title" => $ex->getTitle(),
+            "status" => $ex->getCode(),
+            "details" => $ex->getMessage(),
+        ];
         if(is_subclass_of($ex, 'HttpApiException')) {
-
+            $problemDetails['type'] = $this->errorTypeBaseURI . str_replace('\\', '/', (new \ReflectionClass($ex))->getShortName());
+        }
+        $errorID = uniqid();
+        if(!empty($this->errorInstanceBaseURI)) {
+            $problemDetails['instance'] = $this->errorInstanceBaseURI . $errorID;
         }
 
-        $this->logger->alert("ExceptionHandler: '{$ex->getMessage()}' in {$ex->getFile()} line {$ex->getLine()}\n{$ex->getTraceAsString()}");
+        if ($this->logger !== null) {
+            $loggerInfo = $problemDetails + [
+                    'file' => $ex->getFile(),
+                    'line' => $ex->getLine(),
+                    'traceString' => $ex->getTraceAsString(),
+                    'errorId' => $errorID,
+                    'exception' => $ex
+                ];
+            $this->logger->alert("ExceptionHandler: {title}:'{details}' in {file} line {line}, trace: {traceString}", $loggerInfo);
+        }
 
-        $problemDetails = [
-            "type" => "uri/error/" . str_replace('\\', '/', get_class($this)),
-            "title" => StatusCodes::getStatusDescription($this->code),
-            "status" => $this->code,
-            "details" => "Exception '$this->message' in {$this->getFile()}({$this->getLine()}): $this->responseBody",
-            "instance" => "uri/error/" . time()
-        ];
+        if($this->debugMode) {
+            $problemDetails['trace'] = $ex->getTrace();
+        }
+
+        $headerAlreadySent = true;
+        if ( ! headers_sent($file, $line)) {
+            $headerAlreadySent = false;
+            header(StatusCodes::getStatusLine($ex->getCode()));
+            header("Content-Type: application/problem+json");
+        }
 
         echo json_encode($problemDetails);
         if ($headerAlreadySent) {
-            throw new \InvalidArgumentException("JsonExceptionHandler: Cannot set header(): Output started in $file Line $line. Original Exception Msg: {$e->getMessage()}", 1, $e);
+            throw new \InvalidArgumentException("ExceptionHandler: Cannot set header(): Output started in $file Line $line. Original Exception Msg: {$ex->getMessage()}", 1, $ex);
         }
         exit;
     }
 
-    private function log(string $msg)
-    {
-        if ($this->logger !== null) {
-            $this->logger->alert("ExceptionHandler: $msg");
-        }
-    }
+//    private function getProblemDetails(HttpApiException $ex) : array
+//    {
+//
+//    }
 
-    private function mapException(\Exception $e)
+    private function mapException(\Exception $e) : HttpApiException
     {
         if ($e instanceof HttpApiException) {
             return $e;
