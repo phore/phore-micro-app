@@ -78,7 +78,7 @@ class JsonExceptionHandler
             if ($error === null)
                 throw new \InvalidArgumentException("A filter must return something.");
         }
-        echo json_encode($error);
+        echo json_encode($error, JSON_PRESERVE_ZERO_FRACTION|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         if ($headerAlreadySent) {
             throw new \InvalidArgumentException("JsonExceptionHandler: Cannot set header(): Output started in $file Line $line. Original Exception Msg: {$e->getMessage()}", 1, $e);
         }

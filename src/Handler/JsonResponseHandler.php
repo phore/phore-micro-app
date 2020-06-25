@@ -36,7 +36,7 @@ class JsonResponseHandler implements ResponseHandler
             if ($data === null)
                 throw new InvalidArgumentException("A filter must return something.");
         }
-        echo json_encode($data);
+        echo json_encode($data, JSON_PRESERVE_ZERO_FRACTION|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
