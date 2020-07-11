@@ -3,10 +3,7 @@
 
 namespace Phore\MicroApp\Handler;
 
-
-use Phore\Core\Exception\NotFoundException;
 use Phore\MicroApp\Exception\HttpApiException;
-use Phore\MicroApp\Exception\HttpException;
 use Phore\MicroApp\Response\StatusCodes;
 use Psr\Log\LoggerInterface;
 
@@ -112,17 +109,6 @@ class HttpApiErrorHandler
 
         if($this->debugMode) {
             $problemDetails['traceString'] = explode("\n",$ex->getTraceAsString());
-//            $traces = [];
-//            foreach($ex->getTrace() as $trace) {
-////                $trace['args'][0];
-////                $e = new \InvalidArgumentException();
-////                $e->
-//                $msg = strip_tags(phore_pluck("args.0.xdebug_message", $trace, ""));
-//                if(!empty($msg))
-//                    $trace['args'][0]['xdebug_message'] = $msg;
-//                $traces[] = $trace;
-//            }
-//            $problemDetails['trace'] = $traces;//$ex->getTrace();
         }
 
         $headerAlreadySent = true;
@@ -132,17 +118,12 @@ class HttpApiErrorHandler
             header("Content-Type: application/problem+json");
         }
 
-        echo json_encode($problemDetails);
+        echo json_encode($problemDetails, JSON_PRESERVE_ZERO_FRACTION|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         if ($headerAlreadySent) {
             throw new \InvalidArgumentException("ExceptionHandler: Cannot set header(): Output started in $file Line $line. Original Exception Msg: {$ex->getMessage()}", 1, $ex);
         }
         exit;
     }
-
-//    private function getProblemDetails(HttpApiException $ex) : array
-//    {
-//
-//    }
 
     private function mapException(\Exception $e) : HttpApiException
     {
