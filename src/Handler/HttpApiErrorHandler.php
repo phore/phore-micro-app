@@ -86,7 +86,7 @@ class HttpApiErrorHandler
             "status" => $ex->getCode(),
             "details" => $ex->getMessage(),
         ];
-        if(is_subclass_of($ex, 'HttpApiException')) {
+        if(is_subclass_of($ex, HttpApiException::class)) {
             $problemDetails['type'] = $this->errorTypeBaseURI . str_replace('\\', '/', (new \ReflectionClass($ex))->getShortName());
         }
         $errorID = uniqid();
