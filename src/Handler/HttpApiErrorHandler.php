@@ -77,15 +77,16 @@ class HttpApiErrorHandler
      */
     public function __invoke(\Exception $ex)
     {
-
-        $ex = $this->mapException($ex);
-
         $problemDetails = [
             "type" => "about:blank",
-            "title" => $ex->getTitle(),
-            "status" => $ex->getCode(),
+            "title" => StatusCodes::getStatusDescription(StatusCodes::HTTP_INTERNAL_SERVER_ERROR),
+            "status" => StatusCodes::HTTP_INTERNAL_SERVER_ERROR,
             "details" => $ex->getMessage(),
         ];
+        if ($ex instanceof HttpApiException) {
+            $problemDetails['title'] = $ex->getTitle();
+            $problemDetails['status'] = $ex->getCode();
+        }
         if(is_subclass_of($ex, HttpApiException::class)) {
             $problemDetails['type'] = $this->errorTypeBaseURI . str_replace('\\', '/', (new \ReflectionClass($ex))->getShortName());
         }
@@ -114,7 +115,7 @@ class HttpApiErrorHandler
         $headerAlreadySent = true;
         if ( ! headers_sent($file, $line)) {
             $headerAlreadySent = false;
-            header(StatusCodes::getStatusLine($ex->getCode()));
+            header(StatusCodes::getStatusLine($problemDetails['status'] ?? 500));
             header("Content-Type: application/problem+json");
         }
 
@@ -123,14 +124,6 @@ class HttpApiErrorHandler
             throw new \InvalidArgumentException("ExceptionHandler: Cannot set header(): Output started in $file Line $line. Original Exception Msg: {$ex->getMessage()}", 1, $ex);
         }
         exit;
-    }
-
-    private function mapException(\Exception $e) : HttpApiException
-    {
-        if ($e instanceof HttpApiException) {
-            return $e;
-        }
-        return new HttpApiException($e->getMessage(), StatusCodes::HTTP_INTERNAL_SERVER_ERROR, $e);
     }
 
 }
