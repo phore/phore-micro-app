@@ -135,13 +135,15 @@ class App extends DiContainer
             $request = Request::Build();
         $this->define("request", new DiValue($request));
 
-        if (($ret = $this->triggerEvent(self::EVENT_ON_REQUEST)) instanceof Response) {
-            return $ret->send();
-        }
 
-        $this->acl->validate($request);
 
         try {
+            if (($ret = $this->triggerEvent(self::EVENT_ON_REQUEST)) instanceof Response) {
+                return $ret->send();
+            }
+
+            $this->acl->validate($request);
+
             $ret = $this->router->__dispatchRoute($request);
             if ($ret === true)
                 return true;
