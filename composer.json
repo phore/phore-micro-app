@@ -20,7 +20,7 @@
   },
   "require": {
     "php" : ">7.1",
-    "phore/di-base": "2.1.1",
+    "phore/di-base": "^2.2.0",
     "psr/log": "^1.1",
     "phore/core": "*",
     "ext-json": "*",
